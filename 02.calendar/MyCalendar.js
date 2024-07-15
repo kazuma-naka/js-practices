@@ -21,7 +21,7 @@ class MyCalendar {
   }
 
   #displayDayofWeek() {
-    console.log("日 月 火 水 木 金 土");
+    console.log(" 日 月 火 水 木 金 土");
   }
 
   #displayDatesOfMonth(month, year) {
@@ -37,7 +37,7 @@ class MyCalendar {
     const startIndex = this.#getStartIndexForFirstWeekDay(firstWeekDay);
     let dates = "";
     for (let i = 0; i < startIndex; i++) {
-        dates += "   ";
+        dates += "    ";
     }
     for (let i = 1; i <= 7 - startIndex; i++) {
         dates += ' ' + i + " ";
