@@ -6,7 +6,7 @@ class MyCalendar {
   constructor(year, month) {
     this.#year = year;
     this.#month = month;
-    if(month === true){
+    if (month === true) {
       this.#month = 1;
     }
   }
@@ -28,40 +28,45 @@ class MyCalendar {
   }
 
   #displayDatesOfMonth(month, year) {
-    const startOfMonth = DateTime.local(year, month,1);
-    const endOfMonth = startOfMonth.endOf('month');
+    const startOfMonth = DateTime.local(year, month, 1);
+    const endOfMonth = startOfMonth.endOf("month");
     const firstWeekDay = startOfMonth.weekday;
-    const allDatesInMonth = this.#getAllDatesInMonth(startOfMonth,endOfMonth);
+    const allDatesInMonth = this.#getAllDatesInMonth(startOfMonth, endOfMonth);
     this.#displayFirstWeek(firstWeekDay);
-    this.#displayRestOfDates(year, month, firstWeekDay, allDatesInMonth)
+    this.#displayRestOfDates(year, month, firstWeekDay, allDatesInMonth);
   }
 
   #displayFirstWeek(firstWeekDay) {
     const startIndex = this.#getStartIndexForFirstWeekDay(firstWeekDay);
     let dates = "";
     for (let i = 0; i < startIndex; i++) {
-        dates += "    ";
+      dates += "    ";
     }
     for (let i = 1; i <= 7 - startIndex; i++) {
-        dates += ' ' + i + " ";
+      dates += " " + i + " ";
     }
     console.log(dates);
   }
 
-  #displayRestOfDates(year, month, firstWeekDay,allDatesInMonth){
-    const numberOfDatesInFirstWeek = this.#getNumberOfDatesInFirstWeek(firstWeekDay);
-    let daysInString = '';
-    for(let date = numberOfDatesInFirstWeek; date < allDatesInMonth.length + 1; date++){
-      const weekDay = DateTime.local(year,month,date).weekday;
-      daysInString = daysInString + ' ' + date.toString().padStart(2,' ');;
-      if(weekDay === 6){
-        daysInString = daysInString + '\n';
+  #displayRestOfDates(year, month, firstWeekDay, allDatesInMonth) {
+    const numberOfDatesInFirstWeek =
+      this.#getNumberOfDatesInFirstWeek(firstWeekDay);
+    let daysInString = "";
+    for (
+      let date = numberOfDatesInFirstWeek;
+      date < allDatesInMonth.length + 1;
+      date++
+    ) {
+      const weekDay = DateTime.local(year, month, date).weekday;
+      daysInString = daysInString + " " + date.toString().padStart(2, " ");
+      if (weekDay === 6) {
+        daysInString = daysInString + "\n";
       }
     }
     console.log(daysInString);
   }
 
-  #getAllDatesInMonth(startOfMonth, endOfMonth){
+  #getAllDatesInMonth(startOfMonth, endOfMonth) {
     let current = startOfMonth;
     const dates = [];
     while (current <= endOfMonth) {
@@ -80,22 +85,21 @@ class MyCalendar {
     return new Intl.DateTimeFormat("ja-JP", { month: "long" }).format(date);
   }
 
-  #getStartIndexForFirstWeekDay(firstWeekDay){
-    if(firstWeekDay === 7){
+  #getStartIndexForFirstWeekDay(firstWeekDay) {
+    if (firstWeekDay === 7) {
       return 0;
-    }else {
+    } else {
       return firstWeekDay;
     }
   }
 
-  #getNumberOfDatesInFirstWeek(firstWeekDay){
-    if(firstWeekDay === 7){
+  #getNumberOfDatesInFirstWeek(firstWeekDay) {
+    if (firstWeekDay === 7) {
       return firstWeekDay + 1;
-    }else{
+    } else {
       return 8 - firstWeekDay;
     }
   }
-
 }
 
 export default MyCalendar;
