@@ -12,9 +12,13 @@ class MyMemo {
 
   create(memoInString) {
     const title = this.#getMemoTitle(memoInString);
-    fs.writeFile(`${this.#memosFolderPath}/${title}.txt`, memoInString, (err) => {
-      if (err) throw err;
-    });
+    fs.writeFile(
+      `${this.#memosFolderPath}/${title}.txt`,
+      memoInString,
+      (err) => {
+        if (err) throw err;
+      },
+    );
   }
 
   edit() {}
