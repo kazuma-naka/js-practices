@@ -1,15 +1,18 @@
 class MyMemo {
-  constructor() {}
+  #memosFolferPath;
+  constructor() {
+    this.#memosFolferPath = "./memos";
+  }
 
   lookUp() {}
 
-  reference(){}
+  reference() {}
 
   create() {}
 
   edit() {}
 
-  delete(){}
+  delete() {}
 }
 
 export default MyMemo;
