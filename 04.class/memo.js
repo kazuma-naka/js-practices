@@ -11,6 +11,7 @@ if (process.argv.length > 2) {
   } else if (argument === "-r") {
     myMemo.reference();
   } else if (argument === "-d") {
+    myMemo.delete();
   } else if (argument === "-e") {
   }
 } else {

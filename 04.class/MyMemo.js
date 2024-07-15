@@ -43,7 +43,20 @@ class MyMemo {
 
   edit() {}
 
-  delete() {}
+  delete() {
+    (async () => {
+      const memos = this.#getMemoTitles();
+      if (memos.length === 0) return;
+      const question = {
+        type: "select",
+        name: "memoTitle",
+        message: "Enter キーでメモを削除",
+        choices: memos,
+      };
+      const answer = await enquirer.prompt(question);
+      this.#deleteMemo(answer.memoTitle);
+    })();
+  }
 
   #getMemoTitles() {
     const memoTitles = [];
@@ -90,6 +103,16 @@ class MyMemo {
       return "empty_memo";
     } else {
       return memoInString.split("\n")[0].replace(/\s+/g, "");
+    }
+  }
+
+  #deleteMemo(fileName) {
+    try {
+      const filePath = path.join(this.#memosFolderPath, `${fileName}.txt`);
+      fs.unlinkSync(filePath);
+      console.log(`${fileName} を削除しました`);
+    } catch (err) {
+      console.error(`${fileName} の削除に失敗しました: `, err);
     }
   }
 }
