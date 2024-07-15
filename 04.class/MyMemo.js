@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import readline from "readline";
 import enquirer from "enquirer";
 
 class MyMemo {
@@ -30,15 +31,35 @@ class MyMemo {
     })();
   }
 
-  create(memoInString) {
-    const title = this.#getMemoTitle(memoInString);
-    fs.writeFile(
-      `${this.#memosFolderPath}/${title}.txt`,
-      memoInString,
-      (err) => {
-        if (err) throw err;
-      },
-    );
+  create() {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    let inputLines = [];
+
+    console.log("メモの本文を入力してください");
+    console.log("eof で入力を終了");
+
+    rl.on("line", (input) => {
+      if (input.trim().toUpperCase() === "EOF") {
+        rl.close();
+      } else {
+        inputLines.push(input);
+      }
+    });
+
+    rl.on("close", () => {
+      const title = this.#getMemoTitle(inputLines.join("\n"));
+      fs.writeFile(
+        `${this.#memosFolderPath}/${title}.txt`,
+        inputLines.join("\n"),
+        (err) => {
+          if (err) throw err;
+        },
+      );
+    });
   }
 
   edit() {}
