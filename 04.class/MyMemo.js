@@ -1,7 +1,7 @@
 class MyMemo {
-  #memosFolferPath;
+  #memosFolderPath;
   constructor() {
-    this.#memosFolferPath = "./memos";
+    this.#memosFolderPath = "./memos";
   }
 
   lookUp() {}
