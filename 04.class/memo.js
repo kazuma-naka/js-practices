@@ -7,6 +7,7 @@ const myMemo = new MyMemo();
 if (process.argv.length > 2) {
   const argument = process.argv.slice(2)[0];
   if (argument === "-l") {
+    myMemo.lookUp();
   } else if (argument === "-r") {
   } else if (argument === "-d") {
   } else if (argument === "-e") {

@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 
 class MyMemo {
   #memosFolderPath;
@@ -6,7 +7,12 @@ class MyMemo {
     this.#memosFolderPath = "./memos";
   }
 
-  lookUp() {}
+  lookUp() {
+    const memos = this.#getAllMemos();
+    for (const memo of memos) {
+      console.log(memo.toString());
+    }
+  }
 
   reference() {}
 
@@ -24,6 +30,27 @@ class MyMemo {
   edit() {}
 
   delete() {}
+
+  #getAllMemos() {
+    const memoTitles = [];
+    try {
+      const files = fs.readdirSync(this.#memosFolderPath);
+      for (const file of files) {
+        const filePath = path.join(this.#memosFolderPath, file);
+        const stats = fs.statSync(filePath);
+
+        if (stats.isFile()) {
+          const data = fs.readFileSync(filePath, "utf8");
+          const memoTitle = this.#getMemoTitle(data);
+          memoTitles.push(memoTitle);
+        }
+      }
+      return memoTitles;
+    } catch (err) {
+      console.error(`ファイルの取得に失敗しました: ` + err);
+      return memoTitles;
+    }
+  }
 
   #getMemoTitle(memoInString) {
     if (
