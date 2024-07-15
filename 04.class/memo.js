@@ -9,6 +9,7 @@ if (process.argv.length > 2) {
   if (argument === "-l") {
     myMemo.lookUp();
   } else if (argument === "-r") {
+    myMemo.reference();
   } else if (argument === "-d") {
   } else if (argument === "-e") {
   }

@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import enquirer from "enquirer";
 
 class MyMemo {
   #memosFolderPath;
@@ -8,13 +9,26 @@ class MyMemo {
   }
 
   lookUp() {
-    const memos = this.#getAllMemos();
+    const memos = this.#getMemoTitles();
     for (const memo of memos) {
       console.log(memo.toString());
     }
   }
 
-  reference() {}
+  reference() {
+    (async () => {
+      const memos = this.#getMemoTitles();
+      if (memos.length === 0) return;
+      const question = {
+        type: "select",
+        name: "memoTitle",
+        message: "Enter キーでメモを表示",
+        choices: memos,
+      };
+      const answer = await enquirer.prompt(question);
+      console.log(`${this.#getMemoContent(answer.memoTitle)}`);
+    })();
+  }
 
   create(memoInString) {
     const title = this.#getMemoTitle(memoInString);
@@ -31,7 +45,7 @@ class MyMemo {
 
   delete() {}
 
-  #getAllMemos() {
+  #getMemoTitles() {
     const memoTitles = [];
     try {
       const files = fs.readdirSync(this.#memosFolderPath);
@@ -49,6 +63,20 @@ class MyMemo {
     } catch (err) {
       console.error(`ファイルの取得に失敗しました: ` + err);
       return memoTitles;
+    }
+  }
+
+  #getMemoContent(fileName) {
+    try {
+      const filePath = path.join(this.#memosFolderPath, `${fileName}.txt`);
+      const stats = fs.statSync(filePath);
+      if (stats.isFile()) {
+        const data = fs.readFileSync(filePath, "utf8");
+        return data;
+      }
+    } catch (err) {
+      console.error(`${fileName}.txt の取得に失敗しました: ` + err);
+      return "Not Found";
     }
   }
 
