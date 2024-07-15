@@ -9,7 +9,7 @@ class MyMemo {
   }
 
   lookUp() {
-    const memos = this.#getMemoTitles();
+    const memos = this.#getAllMemoTitles();
     for (const memo of memos) {
       console.log(memo.toString());
     }
@@ -17,7 +17,7 @@ class MyMemo {
 
   reference() {
     (async () => {
-      const memos = this.#getMemoTitles();
+      const memos = this.#getAllMemoTitles();
       if (memos.length === 0) return;
       const question = {
         type: "select",
@@ -45,7 +45,7 @@ class MyMemo {
 
   delete() {
     (async () => {
-      const memos = this.#getMemoTitles();
+      const memos = this.#getAllMemoTitles();
       if (memos.length === 0) return;
       const question = {
         type: "select",
@@ -58,7 +58,7 @@ class MyMemo {
     })();
   }
 
-  #getMemoTitles() {
+  #getAllMemoTitles() {
     const memoTitles = [];
     try {
       const files = fs.readdirSync(this.#memosFolderPath);
