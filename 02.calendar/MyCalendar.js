@@ -38,9 +38,9 @@ class MyCalendar {
 
   #displayFirstWeek(firstWeekDay) {
     const startIndex = this.#getStartIndexForFirstWeekDay(firstWeekDay);
-    let dates = "";
+    let dates = " ";
     for (let i = 0; i < startIndex; i++) {
-      dates += "    ";
+      dates += "   ";
     }
     for (let i = 1; i <= 7 - startIndex; i++) {
       dates += " " + i + " ";
