@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 import readline from "readline";
+import MyMemo from "./MyMemo.js";
+
+const myMemo = new MyMemo();
+addingMemo();
 
 function addingMemo() {
   const rl = readline.createInterface({
@@ -21,5 +25,7 @@ function addingMemo() {
     }
   });
 
-  rl.on("close", () => {});
+  rl.on("close", () => {
+    myMemo.create(inputLines.join("\n"));
+  });
 }

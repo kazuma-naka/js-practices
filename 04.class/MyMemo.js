@@ -1,3 +1,5 @@
+import fs from "fs";
+
 class MyMemo {
   #memosFolderPath;
   constructor() {
@@ -8,7 +10,12 @@ class MyMemo {
 
   reference() {}
 
-  create() {}
+  create(memoInString) {
+    const title = this.#getMemoTitle(memoInString);
+    fs.writeFile(`${this.#memosFolderPath}/${title}.txt`, memoInString, (err) => {
+      if (err) throw err;
+    });
+  }
 
   edit() {}
 
