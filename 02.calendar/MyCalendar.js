@@ -8,7 +8,7 @@ class MyCalendar {
     this.#month = month;
   }
 
-  showCalendar() {
+  show() {
     if (this.#year > 2100 || this.#year < 1970) return;
     if (this.#month < 1 || this.#month > 12) return;
     this.#displayCalendarHeader(this.#month, this.#year);

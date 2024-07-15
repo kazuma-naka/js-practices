@@ -19,4 +19,4 @@ const month = args.m;
 const year = args.y;
 
 const myCalendar = new MyCalendar(year, month);
-myCalendar.showCalendar();
+myCalendar.show();
