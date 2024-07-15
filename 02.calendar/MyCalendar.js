@@ -6,6 +6,9 @@ class MyCalendar {
   constructor(year, month) {
     this.#year = year;
     this.#month = month;
+    if(month === true){
+      this.#month = 1;
+    }
   }
 
   show() {
