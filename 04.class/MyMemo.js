@@ -79,6 +79,12 @@ class MyMemo {
     })();
   }
 
+  createMemoDirectory(){
+    if(!fs.existsSync(this.#memosFolderPath)){
+      fs.mkdirSync(this.#memosFolderPath)
+    }
+  }
+
   #getAllMemoTitles() {
     const memoTitles = [];
     try {

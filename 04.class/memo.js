@@ -3,6 +3,7 @@
 import MyMemo from "./MyMemo.js";
 
 const myMemo = new MyMemo();
+myMemo.createMemoDirectory();
 if (process.argv.length > 2) {
   const argument = process.argv.slice(2)[0];
   if (argument === "-l") {
