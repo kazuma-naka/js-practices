@@ -32,14 +32,13 @@ class MyCalendar {
 
   #displayRestOfDates(year, month, endOfMonth) {
     let daysInString = "";
+    const firstWeekDay = DateTime.local(year, month, 1).weekday;
+    const startIndex = firstWeekDay % 7;
+    for (let i = 0; i < startIndex; i++) {
+      daysInString += "   ";
+    }
     for (let date = 1; date <= endOfMonth; date++) {
       const weekDay = DateTime.local(year, month, date).weekday;
-      if (date === 1) {
-        const startIndex = weekDay % 7;
-        for (let i = 0; i < startIndex; i++) {
-          daysInString += "   ";
-        }
-      }
       daysInString = daysInString + " " + date.toString().padStart(2, " ");
       if (weekDay === 6) {
         daysInString = daysInString + "\n";
