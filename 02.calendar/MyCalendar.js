@@ -16,8 +16,8 @@ class MyCalendar {
     this.#displayDatesOfMonth(this.#month, this.#year);
   }
 
-  #displayCalendarHeader() {
-    console.log(`       ${this.#getMonthName(this.#month)} ${this.#year}`);
+  #displayCalendarHeader(month, year) {
+    console.log(`       ${this.#getMonthName(month)} ${year}`);
   }
 
   #displayDayofWeek() {
