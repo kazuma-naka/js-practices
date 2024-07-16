@@ -13,6 +13,7 @@ if (process.argv.length > 2) {
   } else if (argument === "-d") {
     myMemo.delete();
   } else if (argument === "-e") {
+    myMemo.edit();
   }
 } else {
   myMemo.create();

@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import readline from "readline";
+import { execSync } from "child_process";
 import enquirer from "enquirer";
 
 class MyMemo {
@@ -62,7 +63,34 @@ class MyMemo {
     });
   }
 
-  edit() {}
+  edit() {
+    (async () => {
+      const memos = this.#getAllMemoTitles();
+      if (memos.length === 0) return;
+      const question = {
+        type: "select",
+        name: "memoTitle",
+        message: "Enter キーでメモを編集",
+        choices: memos,
+      };
+      const answer = await enquirer.prompt(question);
+
+      const editor = process.env.EDITOR;
+      const filePath = `${this.#memosFolderPath}/${answer.memoTitle}.txt`;
+
+      if (editor) {
+        try {
+          execSync(`${editor} ${filePath}`, {
+            stdio: "inherit",
+          });
+        } catch (error) {
+          console.error(`${editor} の起動に失敗しました: ${error.message}`);
+        }
+      } else {
+        console.error("環境変数 EDITOR が設定されていません。");
+      }
+    })();
+  }
 
   delete() {
     (async () => {
@@ -79,9 +107,9 @@ class MyMemo {
     })();
   }
 
-  createMemoDirectory(){
-    if(!fs.existsSync(this.#memosFolderPath)){
-      fs.mkdirSync(this.#memosFolderPath)
+  createMemoDirectory() {
+    if (!fs.existsSync(this.#memosFolderPath)) {
+      fs.mkdirSync(this.#memosFolderPath);
     }
   }
 
