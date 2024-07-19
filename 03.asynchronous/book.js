@@ -6,6 +6,9 @@ const booksDatabase = new BooksDatabase();
 
 //asyncCallbackError();
 //asyncPromiseError();
+setTimeout(() => {
+    asyncAwait();
+}, 5000);
 asyncAwaitError();
 
 function asyncCallback() {
