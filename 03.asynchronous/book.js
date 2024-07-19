@@ -4,7 +4,7 @@ import BooksDatabase from "./BooksDatabase.js";
 
 const booksDatabase = new BooksDatabase();
 
-asyncPromise();
+asyncAwait();
 
 function asyncCallback() {
   setTimeout(() => {
@@ -54,4 +54,18 @@ function asyncPromise() {
     .catch((error) => {
       console.error(error);
     });
+}
+
+function asyncAwait() {
+    (async () => {
+        await booksDatabase.createWithPromise();
+        await booksDatabase.insertWithPromise("test book title");
+        await booksDatabase.insertWithPromise("test book title 2");
+        await booksDatabase.insertWithPromise("test book title 3");
+        await booksDatabase.insertWithPromise("test book title 4");
+        await booksDatabase.insertWithPromise("test book title 5");
+        await booksDatabase.showWithPromise();
+        await booksDatabase.dropTableWithPromise();
+        await booksDatabase.closeWithPromise();
+    })();
 }
