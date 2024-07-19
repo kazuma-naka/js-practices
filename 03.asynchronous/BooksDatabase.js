@@ -36,6 +36,22 @@ class BooksDatabase {
     });
   }
 
+  insertHasError(titleName) {
+    const insertSQL = `INSERT INTO bools (title) VALUES (?)`;
+    this.#db.run(insertSQL, [titleName], function (err) {
+      if (err) return console.error(err);
+      console.log(`${titleName} が挿入されました。\nrowid: ${this.lastID}`);
+    });
+  }
+
+  showHasError() {
+    const selectSQL = "SELECT id, title FROM boojs";
+    this.#db.each(selectSQL, (err, row) => {
+      if (err) return console.error(err);
+      console.log(`${row.id}: ${row.title}`);
+    });
+  }
+
   dropTable() {
     const dropTableSQL = `DROP TABLE IF EXISTS books`;
     this.#db.run(dropTableSQL, (err) => {
@@ -75,6 +91,28 @@ class BooksDatabase {
   showWithPromise() {
     return new Promise((resolve, reject) => {
       const selectSQL = "SELECT id, title FROM books";
+      this.#db.each(selectSQL, (err, row) => {
+        if (err) return reject(new Error(err.message));
+        console.log(`${row.id}: ${row.title}`);
+      });
+      resolve();
+    });
+  }
+
+  insertWithPromiseHasError(titleName) {
+    return new Promise((resolve, reject) => {
+      const insertSQL = `INSERT INTO boooks (title) VALUES (?)`;
+      this.#db.run(insertSQL, [titleName], function (err) {
+        if (err) return reject(new Error(err.message));
+        console.log(`${titleName} が挿入されました。rowid: ${this.lastID}`);
+        resolve();
+      });
+    });
+  }
+
+  showWithPromiseHasError() {
+    return new Promise((resolve, reject) => {
+      const selectSQL = "SELECT id, title FROM baoks";
       this.#db.each(selectSQL, (err, row) => {
         if (err) return reject(new Error(err.message));
         console.log(`${row.id}: ${row.title}`);

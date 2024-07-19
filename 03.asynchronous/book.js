@@ -4,7 +4,9 @@ import BooksDatabase from "./BooksDatabase.js";
 
 const booksDatabase = new BooksDatabase();
 
-asyncAwait();
+//asyncCallbackError();
+//asyncPromiseError();
+asyncAwaitError();
 
 function asyncCallback() {
   setTimeout(() => {
@@ -13,6 +15,24 @@ function asyncCallback() {
       booksDatabase.insert("test book");
       setTimeout(() => {
         booksDatabase.show();
+        setTimeout(() => {
+          booksDatabase.dropTable();
+          setTimeout(() => {
+            booksDatabase.close();
+          }, 1000);
+        }, 1000);
+      }, 1000);
+    }, 1000);
+  }, 1000);
+}
+
+function asyncCallbackError() {
+  setTimeout(() => {
+    booksDatabase.create();
+    setTimeout(() => {
+      booksDatabase.insertHasError("test book");
+      setTimeout(() => {
+        booksDatabase.showHasError();
         setTimeout(() => {
           booksDatabase.dropTable();
           setTimeout(() => {
@@ -56,16 +76,70 @@ function asyncPromise() {
     });
 }
 
+function asyncPromiseError() {
+  booksDatabase
+    .createWithPromise()
+    .then(() => {
+      return booksDatabase.insertWithPromiseHasError("test book title");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromiseHasError("test book title 2");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromiseHasError("test book title 3");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromiseHasError("test book title 4");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromiseHasError("test book title 5");
+    })
+    .then(() => {
+      return booksDatabase.showWithPromiseHasError();
+    })
+    .then(() => {
+      return booksDatabase.dropTableWithPromise();
+    })
+    .then(() => {
+      return booksDatabase.closeWithPromise();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
 function asyncAwait() {
-    (async () => {
-        await booksDatabase.createWithPromise();
-        await booksDatabase.insertWithPromise("test book title");
-        await booksDatabase.insertWithPromise("test book title 2");
-        await booksDatabase.insertWithPromise("test book title 3");
-        await booksDatabase.insertWithPromise("test book title 4");
-        await booksDatabase.insertWithPromise("test book title 5");
-        await booksDatabase.showWithPromise();
-        await booksDatabase.dropTableWithPromise();
-        await booksDatabase.closeWithPromise();
-    })();
+  (async () => {
+    try {
+      await booksDatabase.createWithPromise();
+      await booksDatabase.insertWithPromise("test book title");
+      await booksDatabase.insertWithPromise("test book title 2");
+      await booksDatabase.insertWithPromise("test book title 3");
+      await booksDatabase.insertWithPromise("test book title 4");
+      await booksDatabase.insertWithPromise("test book title 5");
+      await booksDatabase.showWithPromise();
+      await booksDatabase.dropTableWithPromise();
+      await booksDatabase.closeWithPromise();
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+}
+
+function asyncAwaitError() {
+  (async () => {
+    try {
+      await booksDatabase.createWithPromise();
+      await booksDatabase.insertWithPromiseHasError("test book title");
+      await booksDatabase.insertWithPromiseHasError("test book title 2");
+      await booksDatabase.insertWithPromiseHasError("test book title 3");
+      await booksDatabase.insertWithPromiseHasError("test book title 4");
+      await booksDatabase.insertWithPromiseHasError("test book title 5");
+      await booksDatabase.showWithPromiseHasError();
+      await booksDatabase.dropTableWithPromise();
+      await booksDatabase.closeWithPromise();
+    } catch (error) {
+      console.error(error);
+    }
+  })();
 }
