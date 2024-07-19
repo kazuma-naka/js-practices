@@ -4,7 +4,7 @@ class BooksDatabase {
   #db;
   #createtableSQL;
   constructor() {
-    this.#db = new sqlite3.Database(":memory");
+    this.#db = new sqlite3.Database(":memory:");
     this.#createtableSQL = `
         CREATE TABLE IF NOT EXISTS books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,7 +31,7 @@ class BooksDatabase {
   show() {
     const selectSQL = "SELECT id, title FROM books";
     this.#db.each(selectSQL, (err, row) => {
-      if (err) console.error(err);
+      if (err) return console.error(err);
       console.log(`${row.id}: ${row.title}`);
     });
   }
@@ -48,6 +48,59 @@ class BooksDatabase {
     this.#db.close((err) => {
       if (err) return console.error(err);
       console.log("データベースをクローズしました。");
+    });
+  }
+
+  createWithPromise() {
+    return new Promise((resolve, reject) => {
+      this.#db.run(this.#createtableSQL, (err) => {
+        if (err) return reject(new Error(err.message));
+        console.log("Books のテーブルを作成");
+        resolve();
+      });
+    });
+  }
+
+  insertWithPromise(titleName) {
+    return new Promise((resolve, reject) => {
+      const insertSQL = `INSERT INTO books (title) VALUES (?)`;
+      this.#db.run(insertSQL, [titleName], function (err) {
+        if (err) return reject(new Error(err.message));
+        console.log(`${titleName} が挿入されました。rowid: ${this.lastID}`);
+        resolve();
+      });
+    });
+  }
+
+  showWithPromise() {
+    return new Promise((resolve, reject) => {
+      const selectSQL = "SELECT id, title FROM books";
+      this.#db.each(selectSQL, (err, row) => {
+        if (err) return reject(new Error(err.message));
+        console.log(`${row.id}: ${row.title}`);
+      });
+      resolve();
+    });
+  }
+
+  dropTableWithPromise() {
+    return new Promise((resolve, reject) => {
+      const dropTableSQL = `DROP TABLE IF EXISTS books`;
+      this.#db.run(dropTableSQL, (err) => {
+        if (err) return reject(new Error(err.message));
+        console.log("テーブルを削除しました。");
+        resolve();
+      });
+    });
+  }
+
+  closeWithPromise() {
+    return new Promise((resolve, reject) => {
+      this.#db.close((err) => {
+        if (err) return reject(new Error(err.message));
+        console.log("データベースをクローズしました。");
+        resolve();
+      });
     });
   }
 }

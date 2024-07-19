@@ -4,7 +4,7 @@ import BooksDatabase from "./BooksDatabase.js";
 
 const booksDatabase = new BooksDatabase();
 
-asyncCallback();
+asyncPromise();
 
 function asyncCallback() {
   setTimeout(() => {
@@ -22,4 +22,36 @@ function asyncCallback() {
       }, 1000);
     }, 1000);
   }, 1000);
+}
+
+function asyncPromise() {
+  booksDatabase
+    .createWithPromise()
+    .then(() => {
+      return booksDatabase.insertWithPromise("test book title");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromise("test book title 2");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromise("test book title 3");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromise("test book title 4");
+    })
+    .then(() => {
+      return booksDatabase.insertWithPromise("test book title 5");
+    })
+    .then(() => {
+      return booksDatabase.showWithPromise();
+    })
+    .then(() => {
+      return booksDatabase.dropTableWithPromise();
+    })
+    .then(() => {
+      return booksDatabase.closeWithPromise();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
