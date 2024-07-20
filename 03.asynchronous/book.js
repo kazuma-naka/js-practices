@@ -4,13 +4,12 @@ import BooksDatabase from "./BooksDatabase.js";
 
 const booksDatabase = new BooksDatabase();
 
-//asyncCallbackError();
-//asyncPromiseError();
 setTimeout(() => {
   asyncAwait();
 }, 5000);
 asyncAwaitError();
 
+// eslint-disable-next-line no-unused-vars
 function asyncCallback() {
   setTimeout(() => {
     booksDatabase.create();
@@ -29,6 +28,7 @@ function asyncCallback() {
   }, 1000);
 }
 
+/* eslint-disable no-unused-vars */
 function asyncCallbackError() {
   setTimeout(() => {
     booksDatabase.create();
@@ -47,6 +47,7 @@ function asyncCallbackError() {
   }, 1000);
 }
 
+/* eslint-disable no-unused-vars */
 function asyncPromise() {
   booksDatabase
     .createWithPromise()
@@ -79,6 +80,7 @@ function asyncPromise() {
     });
 }
 
+/* eslint-disable no-unused-vars */
 function asyncPromiseError() {
   booksDatabase
     .createWithPromise()
