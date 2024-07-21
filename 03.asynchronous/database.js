@@ -196,11 +196,11 @@ database
   .then(() => database.run(insertSQLError, [titleNames[4]]))
   .then(() => database.each(selectSQLError))
   .then(() => database.run(dropTableSQL))
-  .then(() => database.close())
   .catch((err) => console.error(err));
 
 await timers.setTimeout(2500);
 
+/* async await start */
 (async () => {
   try {
     await database.run(createtableSQL);
@@ -210,6 +210,24 @@ await timers.setTimeout(2500);
     await database.run(insertSQL, [titleNames[3]]);
     await database.run(insertSQL, [titleNames[4]]);
     await database.each(selectSQL);
+    await database.run(dropTableSQL);
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+await timers.setTimeout(2500);
+
+/* async await with error start */
+(async () => {
+  try {
+    await database.run(createtableSQL);
+    await database.run(insertSQLError, [titleNames[0]]);
+    await database.run(insertSQLError, [titleNames[1]]);
+    await database.run(insertSQLError, [titleNames[2]]);
+    await database.run(insertSQLError, [titleNames[3]]);
+    await database.run(insertSQLError, [titleNames[4]]);
+    await database.each(selectSQLError);
     await database.run(dropTableSQL);
     await database.close();
   } catch (error) {
