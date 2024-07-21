@@ -1,17 +1,16 @@
 import fs from "fs";
-import path from "path";
 import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
+import FileUtils from "./FileUtils.js";
 
-class MyMemo {
-  #memosFolderPath;
+class MyMemo extends FileUtils {
   constructor() {
-    this.#memosFolderPath = "./memos";
+    super();
   }
 
   lookUp() {
-    const memos = this.#getAllMemoTitles();
+    const memos = this.getAllMemoTitles();
     for (const memo of memos) {
       console.log(memo.toString());
     }
@@ -19,7 +18,7 @@ class MyMemo {
 
   reference() {
     (async () => {
-      const memos = this.#getAllMemoTitles();
+      const memos = this.getAllMemoTitles();
       if (memos.length === 0) return;
       const question = {
         type: "select",
@@ -28,7 +27,7 @@ class MyMemo {
         choices: memos,
       };
       const answer = await enquirer.prompt(question);
-      console.log(`${this.#getMemoContent(answer.memoTitle)}`);
+      console.log(this.getMemoContent(answer.memoTitle));
     })();
   }
 
@@ -52,9 +51,9 @@ class MyMemo {
     });
 
     rl.on("close", () => {
-      const title = this.#getMemoTitle(inputLines.join("\n"));
+      const title = this.getMemoTitle(inputLines.join("\n"));
       fs.writeFile(
-        `${this.#memosFolderPath}/${title}.txt`,
+        `${this.memosFolderPath}/${title}.txt`,
         inputLines.join("\n"),
         (err) => {
           if (err) throw err;
@@ -65,7 +64,7 @@ class MyMemo {
 
   edit() {
     (async () => {
-      const memos = this.#getAllMemoTitles();
+      const memos = this.getAllMemoTitles();
       if (memos.length === 0) return;
       const question = {
         type: "select",
@@ -76,7 +75,7 @@ class MyMemo {
       const answer = await enquirer.prompt(question);
 
       const editor = process.env.EDITOR;
-      const filePath = `${this.#memosFolderPath}/${answer.memoTitle}.txt`;
+      const filePath = `${this.memosFolderPath}/${answer.memoTitle}.txt`;
 
       if (editor) {
         try {
@@ -94,7 +93,7 @@ class MyMemo {
 
   delete() {
     (async () => {
-      const memos = this.#getAllMemoTitles();
+      const memos = this.getAllMemoTitles();
       if (memos.length === 0) return;
       const question = {
         type: "select",
@@ -103,72 +102,8 @@ class MyMemo {
         choices: memos,
       };
       const answer = await enquirer.prompt(question);
-      this.#deleteMemo(answer.memoTitle);
+      this.deleteMemo(answer.memoTitle);
     })();
-  }
-
-  createMemoDirectory() {
-    if (!fs.existsSync(this.#memosFolderPath)) {
-      fs.mkdirSync(this.#memosFolderPath);
-    }
-  }
-
-  #getAllMemoTitles() {
-    const memoTitles = [];
-    try {
-      const files = fs.readdirSync(this.#memosFolderPath);
-      for (const file of files) {
-        const filePath = path.join(this.#memosFolderPath, file);
-        const stats = fs.statSync(filePath);
-
-        if (stats.isFile()) {
-          const data = fs.readFileSync(filePath, "utf8");
-          const memoTitle = this.#getMemoTitle(data);
-          memoTitles.push(memoTitle);
-        }
-      }
-      return memoTitles;
-    } catch (err) {
-      console.error(`ファイルの取得に失敗しました: ` + err);
-      return memoTitles;
-    }
-  }
-
-  #getMemoContent(fileName) {
-    try {
-      const filePath = path.join(this.#memosFolderPath, `${fileName}.txt`);
-      const stats = fs.statSync(filePath);
-      if (stats.isFile()) {
-        const data = fs.readFileSync(filePath, "utf8");
-        return data;
-      }
-    } catch (err) {
-      console.error(`${fileName}.txt の取得に失敗しました: ` + err);
-      return "Not Found";
-    }
-  }
-
-  #getMemoTitle(memoInString) {
-    if (
-      memoInString === "" ||
-      memoInString === null ||
-      memoInString === undefined ||
-      !memoInString.trim()
-    ) {
-      return "empty_memo";
-    } else {
-      return memoInString.split("\n")[0].replace(/\s+/g, "");
-    }
-  }
-
-  #deleteMemo(fileName) {
-    try {
-      const filePath = path.join(this.#memosFolderPath, `${fileName}.txt`);
-      fs.unlinkSync(filePath);
-      console.log(`${fileName} を削除しました`);
-    } catch (err) {
-      console.error(`${fileName} の削除に失敗しました: `, err);
-    }
   }
 }
 

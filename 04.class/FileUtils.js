@@ -2,21 +2,19 @@ import fs from "fs";
 import path from "path";
 
 class FileUtils {
-  #memosFolderPath;
-  constructor() {
-    this.#memosFolderPath = "./memos";
-  }
+  memosFolderPath = "./memos";
+  constructor() {}
 
   createMemoDirectory() {
-    if (!fs.existsSync(this.#memosFolderPath)) {
-      fs.mkdirSync(this.#memosFolderPath);
+    if (!fs.existsSync(this.memosFolderPath)) {
+      fs.mkdirSync(this.memosFolderPath);
     }
   }
 
   getAllMemoTitles() {
     const memoTitles = [];
     try {
-      const files = fs.readdirSync(this.#memosFolderPath);
+      const files = fs.readdirSync(this.memosFolderPath);
       for (const file of files) {
         const data = fs.readFileSync(this.#getFilePath(file), "utf8");
         const memoTitle = this.getMemoTitle(data);
@@ -31,7 +29,7 @@ class FileUtils {
 
   getMemoContent(fileName) {
     try {
-      const data = fs.readFileSync(this.#getFilePath(fileName), "utf8");
+      const data = fs.readFileSync(this.#getFilePathWithTxt(fileName), "utf8");
       return data;
     } catch (err) {
       console.error(`${fileName}.txt の取得に失敗しました: ` + err);
@@ -54,7 +52,7 @@ class FileUtils {
 
   deleteMemo(fileName) {
     try {
-      fs.unlinkSync(this.#getFilePath(fileName));
+      fs.unlinkSync(this.#getFilePathWithTxt(fileName));
       console.log(`${fileName} を削除しました`);
     } catch (err) {
       console.error(`${fileName} の削除に失敗しました: `, err);
@@ -62,7 +60,11 @@ class FileUtils {
   }
 
   #getFilePath(fileName) {
-    return path.join(this.#memosFolderPath, `${fileName}.txt`);
+    return path.join(this.memosFolderPath, fileName);
+  }
+
+  #getFilePathWithTxt(fileName) {
+    return path.join(this.memosFolderPath, `${fileName}.txt`);
   }
 }
 
