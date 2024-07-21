@@ -70,7 +70,7 @@ database.run(createtableSQL, (err) => {
   });
 });
 
-await timers.setTimeout(2000);
+await timers.setTimeout(2500);
 
 /* callback with error start */
 try {
@@ -124,7 +124,7 @@ try {
   console.error(err);
 }
 
-await timers.setTimeout(2000);
+await timers.setTimeout(2500);
 
 /* Promise start */
 const originalRun = sqlite3.Database.prototype.run;
@@ -182,54 +182,37 @@ database
   .then(() => database.run(insertSQL, [titleNames[4]]))
   .then(() => database.each(selectSQL))
   .then(() => database.run(dropTableSQL))
+  .catch((err) => console.error(err));
+
+await timers.setTimeout(2500);
+
+/* Promise with error start */
+database
+  .run(createtableSQL)
+  .then(() => database.run(insertSQLError, [titleNames[0]]))
+  .then(() => database.run(insertSQLError, [titleNames[1]]))
+  .then(() => database.run(insertSQLError, [titleNames[2]]))
+  .then(() => database.run(insertSQLError, [titleNames[3]]))
+  .then(() => database.run(insertSQLError, [titleNames[4]]))
+  .then(() => database.each(selectSQLError))
+  .then(() => database.run(dropTableSQL))
   .then(() => database.close())
   .catch((err) => console.error(err));
 
-// database.run(createtableSQL, (err) => {
-//   if (err) return console.error(err);
-//   console.log("Books のテーブルを作成");
-//   database.run(insertSQL, [titleNames[0]], function (err) {
-//     if (err) return console.error(err);
-//     console.log(`${titleNames[0]} が挿入されました。\nrowid: ${this.lastID}`);
-//     database.run(insertSQL, [titleNames[1]], function (err) {
-//       if (err) return console.error(err);
-//       console.log(`${titleNames[1]} が挿入されました。\nrowid: ${this.lastID}`);
-//       database.run(insertSQL, [titleNames[2]], function (err) {
-//         if (err) return console.error(err);
-//         console.log(
-//           `${titleNames[2]} が挿入されました。\nrowid: ${this.lastID}`,
-//         );
-//         database.run(insertSQL, [titleNames[3]], function (err) {
-//           if (err) return console.error(err);
-//           console.log(
-//             `${titleNames[3]} が挿入されました。\nrowid: ${this.lastID}`,
-//           );
-//           database.run(insertSQL, [titleNames[4]], function (err) {
-//             if (err) return console.error(err);
-//             console.log(
-//               `${titleNames[4]} が挿入されました。\nrowid: ${this.lastID}`,
-//             );
-//             database.each(
-//               selectSQL,
-//               (err, row) => {
-//                 if (err) return console.error(err);
-//                 console.log(`${row.id}: ${row.title}`);
-//               },
-//               (err) => {
-//                 if (err) return console.error(err);
-//                 database.run(dropTableSQL, (err) => {
-//                   if (err) return console.error(err);
-//                   console.log("テーブルを削除しました。");
-//                   database.close((err) => {
-//                     if (err) return console.error(err);
-//                     console.log("データベースをクローズしました。");
-//                   });
-//                 });
-//               },
-//             );
-//           });
-//         });
-//       });
-//     });
-//   });
-// });
+await timers.setTimeout(2500);
+
+(async () => {
+  try {
+    await database.run(createtableSQL);
+    await database.run(insertSQL, [titleNames[0]]);
+    await database.run(insertSQL, [titleNames[1]]);
+    await database.run(insertSQL, [titleNames[2]]);
+    await database.run(insertSQL, [titleNames[3]]);
+    await database.run(insertSQL, [titleNames[4]]);
+    await database.each(selectSQL);
+    await database.run(dropTableSQL);
+    await database.close();
+  } catch (error) {
+    console.error(error);
+  }
+})();
