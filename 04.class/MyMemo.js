@@ -3,8 +3,9 @@ import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
 import FileUtils from "./FileUtils.js";
+import AbstractMemo from "./AbstractMemo.js";
 
-class MyMemo extends FileUtils {
+class MyMemo extends FileUtils(AbstractMemo) {
   constructor() {
     super();
   }
