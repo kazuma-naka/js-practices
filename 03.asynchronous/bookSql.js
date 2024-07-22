@@ -1,16 +1,10 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 
-import sqlite3 from "sqlite3";
 import timers from "timers/promises";
+import sqlite3 from "sqlite3";
 
 const database = new sqlite3.Database(":memory:");
-const createtableSQL = `
-        CREATE TABLE IF NOT EXISTS books (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL UNIQUE
-        );
-    `;
-
+const createTableSQL = `CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);`;
 const insertSQL = `INSERT INTO books (title) VALUES (?)`;
 const selectSQL = "SELECT id, title FROM books";
 const dropTableSQL = `DROP TABLE IF EXISTS books`;
@@ -25,7 +19,7 @@ const titleNames = [
 ];
 
 /* callback start */
-database.run(createtableSQL, (err) => {
+database.run(createTableSQL, (err) => {
   if (err) return console.error(err);
   console.log("Books のテーブルを作成");
   database.run(insertSQL, [titleNames[0]], function (err) {
@@ -74,7 +68,7 @@ await timers.setTimeout(2500);
 
 /* callback with error start */
 try {
-  database.run(createtableSQL, (err) => {
+  database.run(createTableSQL, (err) => {
     if (err) return console.error(err);
     console.log("Books のテーブルを作成");
     database.run(insertSQLError, [titleNames[0]], function (err) {
@@ -139,7 +133,7 @@ sqlite3.Database.prototype.run = function (sqlQuery, params = []) {
     originalRun.call(this, sqlQuery, params, function (err) {
       if (err) reject(err);
       else {
-        if (sqlQuery === createtableSQL) console.log("Books のテーブルを作成");
+        if (sqlQuery === createTableSQL) console.log("Books のテーブルを作成");
         else if (sqlQuery === insertSQL)
           console.log(`${params} が挿入されました。\nrowid: ${this.lastID}`);
         else if (sqlQuery === dropTableSQL)
@@ -174,7 +168,7 @@ sqlite3.Database.prototype.close = function () {
 };
 
 database
-  .run(createtableSQL)
+  .run(createTableSQL)
   .then(() => database.run(insertSQL, [titleNames[0]]))
   .then(() => database.run(insertSQL, [titleNames[1]]))
   .then(() => database.run(insertSQL, [titleNames[2]]))
@@ -188,7 +182,7 @@ await timers.setTimeout(2500);
 
 /* Promise with error start */
 database
-  .run(createtableSQL)
+  .run(createTableSQL)
   .then(() => database.run(insertSQLError, [titleNames[0]]))
   .then(() => database.run(insertSQLError, [titleNames[1]]))
   .then(() => database.run(insertSQLError, [titleNames[2]]))
@@ -203,7 +197,7 @@ await timers.setTimeout(2500);
 /* async await start */
 (async () => {
   try {
-    await database.run(createtableSQL);
+    await database.run(createTableSQL);
     await database.run(insertSQL, [titleNames[0]]);
     await database.run(insertSQL, [titleNames[1]]);
     await database.run(insertSQL, [titleNames[2]]);
@@ -221,7 +215,7 @@ await timers.setTimeout(2500);
 /* async await with error start */
 (async () => {
   try {
-    await database.run(createtableSQL);
+    await database.run(createTableSQL);
     await database.run(insertSQLError, [titleNames[0]]);
     await database.run(insertSQLError, [titleNames[1]]);
     await database.run(insertSQLError, [titleNames[2]]);
