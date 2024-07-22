@@ -3,10 +3,10 @@ import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
 import FileUtils from "./utils/FileUtils.js";
-import AbstractMemo from "./AbstractMemo.js";
+import BaseMemo from "./BaseMemo.js";
 import EditorUtils from "./utils/EditorUtil.js";
 
-class MyMemo extends EditorUtils(FileUtils(AbstractMemo)) {
+class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
   constructor() {
     super();
   }
