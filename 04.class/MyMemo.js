@@ -54,13 +54,7 @@ class MyMemo extends EditorUtils(FileUtils(AbstractMemo)) {
 
     rl.on("close", () => {
       const title = this.getMemoTitle(inputLines.join("\n"));
-      fs.writeFile(
-        this.getFilePathWithTxt(title),
-        inputLines.join("\n"),
-        (err) => {
-          if (err) throw err;
-        },
-      );
+      this.save(title, inputLines);
     });
   }
 
@@ -103,6 +97,35 @@ class MyMemo extends EditorUtils(FileUtils(AbstractMemo)) {
       };
       const answer = await enquirer.prompt(question);
       this.deleteMemo(answer.memoTitle);
+    })();
+  }
+
+  save(firstLineString, inputLines) {
+    (async () => {
+      const memoTitlePrompt = {
+        type: "input",
+        name: "memoTitle",
+        message: "",
+        initial: firstLineString,
+      };
+      const response = await enquirer.prompt(memoTitlePrompt);
+      if (this.isValidFileName(response.memoTitle)) {
+        if (this.hasSameFile(response.memoTitle)) {
+          console.log(`${response.memoTitle}.txt はすでに存在します。\n別の名前をつけてください。`);
+          return this.save(firstLineString, inputLines);
+        }
+        fs.writeFile(
+          this.getFilePathWithTxt(response.memoTitle),
+          inputLines.join("\n"),
+          (err) => {
+            if (err) throw err;
+          },
+        );
+        console.log(`${response.memoTitle}.txt が作成されました。`);
+      } else {
+        console.log(`${response.memoTitle} は不正な名前です。`);
+        return this.save(firstLineString, inputLines);
+      }
     })();
   }
 }
