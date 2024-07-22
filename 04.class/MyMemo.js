@@ -19,7 +19,7 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
       else if (argument === "-r") this.#reference();
       else if (argument === "-d") this.#delete();
       else if (argument === "-e") this.#edit();
-    }else this.#create();
+    } else this.#create();
   }
 
   #lookUp() {
