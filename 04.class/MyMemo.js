@@ -111,7 +111,9 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
       const response = await enquirer.prompt(memoTitlePrompt);
       if (this.isValidFileName(response.memoTitle)) {
         if (this.hasSameFile(response.memoTitle)) {
-          console.log(`${response.memoTitle}.txt はすでに存在します。\n別の名前をつけてください。`);
+          console.log(
+            `${response.memoTitle}.txt はすでに存在します。\n別の名前をつけてください。`,
+          );
           return this.save(firstLineString, inputLines);
         }
         fs.writeFile(

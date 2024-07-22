@@ -59,10 +59,10 @@ const FileUtils = (Base) =>
       return regex.test(fileName);
     }
 
-    hasSameFile(fileName){
+    hasSameFile(fileName) {
       try {
         fs.accessSync(this.getFilePathWithTxt(fileName), fs.constants.F_OK);
-        return true
+        return true;
       } catch {
         return false;
       }
