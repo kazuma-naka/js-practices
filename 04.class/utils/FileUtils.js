@@ -15,11 +15,9 @@ const FileUtils = (Base) =>
       try {
         const files = fs.readdirSync(this.memosFolderPath);
         for (const file of files) {
-          const data = fs.readFileSync(this.getFilePath(file), "utf8");
-          const memoTitle = this.getMemoTitle(data);
-          memoTitles.push(memoTitle);
+          memoTitles.push(fs.readFileSync(this.getFilePath(file), "utf8"));
         }
-        return memoTitles;
+        return memoTitles.map((data) => this.getMemoTitle(data));
       } catch (err) {
         console.error(`ファイルの取得に失敗しました: ` + err);
         return memoTitles;
@@ -31,22 +29,12 @@ const FileUtils = (Base) =>
         const data = fs.readFileSync(this.getFilePathWithTxt(fileName), "utf8");
         return data;
       } catch (err) {
-        console.error(`${fileName}.txt の取得に失敗しました: ` + err);
-        return "Not Found";
+        return console.error(`${fileName}.txt の取得に失敗しました: ` + err);
       }
     }
 
     getMemoTitle(memoInString) {
-      if (
-        memoInString === "" ||
-        memoInString === null ||
-        memoInString === undefined ||
-        !memoInString.trim()
-      ) {
-        return "empty_memo";
-      } else {
-        return memoInString.split("\n")[0].replace(/\s+/g, "");
-      }
+      return memoInString.split("\n")[0].replace(/\s+/g, "");
     }
 
     deleteMemo(fileName) {

@@ -2,9 +2,9 @@ import fs from "fs";
 import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
-import FileUtils from "./FileUtils.js";
+import FileUtils from "./utils/FileUtils.js";
 import AbstractMemo from "./AbstractMemo.js";
-import EditorUtils from "./EditorUtil.js";
+import EditorUtils from "./utils/EditorUtil.js";
 
 class MyMemo extends EditorUtils(FileUtils(AbstractMemo)) {
   constructor() {
