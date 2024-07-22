@@ -15,23 +15,15 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
     this.createMemoDirectory();
     if (process.argv.length > 2) {
       const argument = process.argv.slice(2)[0];
-      if (argument === "-l") {
-        this.#lookUp();
-      } else if (argument === "-r") {
-        this.#reference();
-      } else if (argument === "-d") {
-        this.#delete();
-      } else if (argument === "-e") {
-        this.#edit();
-      }
-    } else {
-      this.#create();
-    }
+      if (argument === "-l") this.#lookUp();
+      else if (argument === "-r") this.#reference();
+      else if (argument === "-d") this.#delete();
+      else if (argument === "-e") this.#edit();
+    }else this.#create();
   }
 
   #lookUp() {
-    const memos = this.getAllMemoTitles();
-    for (const memo of memos) {
+    for (const memo of this.getAllMemoTitles()) {
       console.log(memo.toString());
     }
   }
@@ -52,12 +44,11 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
   }
 
   #create() {
+    let inputLines = [];
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
     });
-
-    let inputLines = [];
 
     console.log("メモの本文を入力してください");
     console.log("eof で入力を終了");
@@ -127,7 +118,7 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
           console.log(
             `${response.memoTitle}.txt はすでに存在します。\n別の名前をつけてください。`,
           );
-          return this.save(hintString, inputLines);
+          return this.#save(hintString, inputLines);
         }
         fs.writeFile(
           this.getFilePathWithTxt(response.memoTitle),
@@ -139,7 +130,7 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
         console.log(`${response.memoTitle}.txt が作成されました。`);
       } else {
         console.log(`${response.memoTitle} は不正な名前です。`);
-        return this.save(hintString, inputLines);
+        return this.#save(hintString, inputLines);
       }
     })();
   }
