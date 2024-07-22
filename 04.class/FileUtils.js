@@ -4,7 +4,6 @@ import path from "path";
 const FileUtils = (Base) =>
   class extends Base {
     memosFolderPath = "./memos";
-
     createMemoDirectory() {
       if (!fs.existsSync(this.memosFolderPath)) {
         fs.mkdirSync(this.memosFolderPath);
@@ -16,7 +15,7 @@ const FileUtils = (Base) =>
       try {
         const files = fs.readdirSync(this.memosFolderPath);
         for (const file of files) {
-          const data = fs.readFileSync(this.#getFilePath(file), "utf8");
+          const data = fs.readFileSync(this.getFilePath(file), "utf8");
           const memoTitle = this.getMemoTitle(data);
           memoTitles.push(memoTitle);
         }
@@ -29,10 +28,7 @@ const FileUtils = (Base) =>
 
     getMemoContent(fileName) {
       try {
-        const data = fs.readFileSync(
-          this.#getFilePathWithTxt(fileName),
-          "utf8",
-        );
+        const data = fs.readFileSync(this.getFilePathWithTxt(fileName), "utf8");
         return data;
       } catch (err) {
         console.error(`${fileName}.txt の取得に失敗しました: ` + err);
@@ -55,18 +51,18 @@ const FileUtils = (Base) =>
 
     deleteMemo(fileName) {
       try {
-        fs.unlinkSync(this.#getFilePathWithTxt(fileName));
+        fs.unlinkSync(this.getFilePathWithTxt(fileName));
         console.log(`${fileName} を削除しました`);
       } catch (err) {
         console.error(`${fileName} の削除に失敗しました: `, err);
       }
     }
 
-    #getFilePath(fileName) {
+    getFilePath(fileName) {
       return path.join(this.memosFolderPath, fileName);
     }
 
-    #getFilePathWithTxt(fileName) {
+    getFilePathWithTxt(fileName) {
       return path.join(this.memosFolderPath, `${fileName}.txt`);
     }
   };

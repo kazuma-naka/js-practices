@@ -4,8 +4,9 @@ import { execSync } from "child_process";
 import enquirer from "enquirer";
 import FileUtils from "./FileUtils.js";
 import AbstractMemo from "./AbstractMemo.js";
+import EditorUtils from "./EditorUtil.js";
 
-class MyMemo extends FileUtils(AbstractMemo) {
+class MyMemo extends EditorUtils(FileUtils(AbstractMemo)) {
   constructor() {
     super();
   }
@@ -54,7 +55,7 @@ class MyMemo extends FileUtils(AbstractMemo) {
     rl.on("close", () => {
       const title = this.getMemoTitle(inputLines.join("\n"));
       fs.writeFile(
-        `${this.memosFolderPath}/${title}.txt`,
+        this.getFilePathWithTxt(title),
         inputLines.join("\n"),
         (err) => {
           if (err) throw err;
@@ -74,13 +75,11 @@ class MyMemo extends FileUtils(AbstractMemo) {
         choices: memos,
       };
       const answer = await enquirer.prompt(question);
-
-      const editor = process.env.EDITOR;
-      const filePath = `${this.memosFolderPath}/${answer.memoTitle}.txt`;
+      const editor = this.getEditorName();
 
       if (editor) {
         try {
-          execSync(`${editor} ${filePath}`, {
+          execSync(`${editor} ${this.getFilePathWithTxt(answer.memoTitle)}`, {
             stdio: "inherit",
           });
         } catch (error) {
