@@ -15,9 +15,9 @@ const FileUtils = (Base) =>
       try {
         const files = fs.readdirSync(this.memosFolderPath);
         for (const file of files) {
-          memoTitles.push(fs.readFileSync(this.getFilePath(file), "utf8"));
+          memoTitles.push(file);
         }
-        return memoTitles.map((data) => this.getMemoTitle(data));
+        return memoTitles;
       } catch (err) {
         console.error(`ファイルの取得に失敗しました: ` + err);
         return memoTitles;
@@ -26,7 +26,7 @@ const FileUtils = (Base) =>
 
     getMemoContent(fileName) {
       try {
-        const data = fs.readFileSync(this.getFilePathWithTxt(fileName), "utf8");
+        const data = fs.readFileSync(this.getFilePath(fileName), "utf8");
         return data;
       } catch (err) {
         return console.error(`${fileName}.txt の取得に失敗しました: ` + err);
@@ -39,7 +39,7 @@ const FileUtils = (Base) =>
 
     deleteMemo(fileName) {
       try {
-        fs.unlinkSync(this.getFilePathWithTxt(fileName));
+        fs.unlinkSync(this.getFilePath(fileName));
         console.log(`${fileName} を削除しました`);
       } catch (err) {
         console.error(`${fileName} の削除に失敗しました: `, err);

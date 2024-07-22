@@ -73,7 +73,7 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
 
       if (editor) {
         try {
-          execSync(`${editor} ${this.getFilePathWithTxt(answer.memoTitle)}`, {
+          execSync(`${editor} ${this.getFilePath(answer.memoTitle)}`, {
             stdio: "inherit",
           });
         } catch (error) {
