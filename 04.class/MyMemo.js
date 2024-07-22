@@ -11,29 +11,47 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
     super();
   }
 
-  lookUp() {
+  createCLI() {
+    this.createMemoDirectory();
+    if (process.argv.length > 2) {
+      const argument = process.argv.slice(2)[0];
+      if (argument === "-l") {
+        this.#lookUp();
+      } else if (argument === "-r") {
+        this.#reference();
+      } else if (argument === "-d") {
+        this.#delete();
+      } else if (argument === "-e") {
+        this.#edit();
+      }
+    } else {
+      this.#create();
+    }
+  }
+
+  #lookUp() {
     const memos = this.getAllMemoTitles();
     for (const memo of memos) {
       console.log(memo.toString());
     }
   }
 
-  reference() {
+  #reference() {
     (async () => {
       const memos = this.getAllMemoTitles();
       if (memos.length === 0) return;
-      const question = {
+      const referencePrompt = {
         type: "select",
         name: "memoTitle",
         message: "Enter キーでメモを表示",
         choices: memos,
       };
-      const answer = await enquirer.prompt(question);
-      console.log(this.getMemoContent(answer.memoTitle));
+      const response = await enquirer.prompt(referencePrompt);
+      console.log(this.getMemoContent(response.memoTitle));
     })();
   }
 
-  create() {
+  #create() {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -45,76 +63,71 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
     console.log("eof で入力を終了");
 
     rl.on("line", (input) => {
-      if (input.trim().toUpperCase() === "EOF") {
-        rl.close();
-      } else {
-        inputLines.push(input);
-      }
+      if (input.trim().toUpperCase() === "EOF") rl.close();
+      else inputLines.push(input);
     });
 
     rl.on("close", () => {
-      const title = this.getMemoTitle(inputLines.join("\n"));
-      this.save(title, inputLines);
+      const hintString = this.getMemoTitle(inputLines.join("\n"));
+      this.#save(hintString, inputLines);
     });
   }
 
-  edit() {
+  #edit() {
     (async () => {
       const memos = this.getAllMemoTitles();
       if (memos.length === 0) return;
-      const question = {
+      const editPrompt = {
         type: "select",
         name: "memoTitle",
         message: "Enter キーでメモを編集",
         choices: memos,
       };
-      const answer = await enquirer.prompt(question);
+      const response = await enquirer.prompt(editPrompt);
       const editor = this.getEditorName();
 
       if (editor) {
         try {
-          execSync(`${editor} ${this.getFilePath(answer.memoTitle)}`, {
+          execSync(`${editor} ${this.getFilePath(response.memoTitle)}`, {
             stdio: "inherit",
           });
         } catch (error) {
           console.error(`${editor} の起動に失敗しました: ${error.message}`);
         }
-      } else {
-        console.error("環境変数 EDITOR が設定されていません。");
-      }
+      } else console.error("環境変数 EDITOR が設定されていません。");
     })();
   }
 
-  delete() {
+  #delete() {
     (async () => {
       const memos = this.getAllMemoTitles();
       if (memos.length === 0) return;
-      const question = {
+      const deletePrompt = {
         type: "select",
         name: "memoTitle",
         message: "Enter キーでメモを削除",
         choices: memos,
       };
-      const answer = await enquirer.prompt(question);
-      this.deleteMemo(answer.memoTitle);
+      const response = await enquirer.prompt(deletePrompt);
+      this.deleteMemo(response.memoTitle);
     })();
   }
 
-  save(firstLineString, inputLines) {
+  #save(hintString, inputLines) {
     (async () => {
-      const memoTitlePrompt = {
+      const savePrompt = {
         type: "input",
         name: "memoTitle",
         message: "",
-        initial: firstLineString,
+        initial: hintString,
       };
-      const response = await enquirer.prompt(memoTitlePrompt);
+      const response = await enquirer.prompt(savePrompt);
       if (this.isValidFileName(response.memoTitle)) {
         if (this.hasSameFile(response.memoTitle)) {
           console.log(
             `${response.memoTitle}.txt はすでに存在します。\n別の名前をつけてください。`,
           );
-          return this.save(firstLineString, inputLines);
+          return this.save(hintString, inputLines);
         }
         fs.writeFile(
           this.getFilePathWithTxt(response.memoTitle),
@@ -126,7 +139,7 @@ class MyMemo extends EditorUtils(FileUtils(BaseMemo)) {
         console.log(`${response.memoTitle}.txt が作成されました。`);
       } else {
         console.log(`${response.memoTitle} は不正な名前です。`);
-        return this.save(firstLineString, inputLines);
+        return this.save(hintString, inputLines);
       }
     })();
   }
