@@ -67,56 +67,28 @@ database.run(createTableSQL, (err) => {
 await timers.setTimeout(2500);
 
 /* callback with error start */
-try {
-  database.run(createTableSQL, (err) => {
-    if (err) return console.error(err);
-    console.log("Books のテーブルを作成");
-    database.run(insertSQLError, [titleNames[0]], function (err) {
-      if (err) return console.error(err);
-      console.log(`${titleNames[0]} が挿入されました。\nrowid: ${this.lastID}`);
-      database.run(insertSQLError, [titleNames[1]], function (err) {
-        if (err) return console.error(err);
-        console.log(
-          `${titleNames[1]} が挿入されました。\nrowid: ${this.lastID}`,
-        );
-        database.run(insertSQLError, [titleNames[2]], function (err) {
-          if (err) return console.error(err);
-          console.log(
-            `${titleNames[2]} が挿入されました。\nrowid: ${this.lastID}`,
-          );
-          database.run(insertSQLError, [titleNames[3]], function (err) {
-            if (err) return console.error(err);
-            console.log(
-              `${titleNames[3]} が挿入されました。\nrowid: ${this.lastID}`,
-            );
-            database.run(insertSQLError, [titleNames[4]], function (err) {
-              if (err) return console.error(err);
-              console.log(
-                `${titleNames[4]} が挿入されました。\nrowid: ${this.lastID}`,
-              );
-              database.each(
-                selectSQLError,
-                (err, row) => {
-                  if (err) return console.error(err);
-                  console.log(`${row.id}: ${row.title}`);
-                },
-                (err) => {
-                  if (err) return console.error(err);
-                  database.run(dropTableSQL, (err) => {
-                    if (err) return console.error(err);
-                    console.log("テーブルを削除しました。");
-                  });
-                },
-              );
-            });
-          });
-        });
+database.run(createTableSQL, (err) => {
+  if (err) throw err;
+  console.log("Books のテーブルを作成");
+  database.run(insertSQLError, [titleNames[0]], function (err) {
+    try {
+      if (err) throw err;
+    } catch {
+      console.error(err.message);
+    }
+    database.each(selectSQLError, (err) => {
+      try {
+        if (err) throw err;
+      } catch {
+        console.error(err.message);
+      }
+      database.run(dropTableSQL, (err) => {
+        if (err) throw err;
+        console.log("テーブルを削除しました。");
       });
     });
   });
-} catch (err) {
-  console.error(err);
-}
+});
 
 await timers.setTimeout(2500);
 
