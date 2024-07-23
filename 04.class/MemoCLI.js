@@ -21,14 +21,14 @@ class MemoCLI extends MyMemo {
   }
 
   lookUp() {
-    for (const memo of this.getAllMemoTitles()) {
+    for (const memo of this.getAllMemos()) {
       console.log(memo.toString());
     }
   }
 
   reference() {
     (async () => {
-      const memos = this.getAllMemoTitles();
+      const memos = this.getAllMemos();
       if (memos.length === 0) return;
       const referencePrompt = {
         type: "select",
@@ -57,14 +57,14 @@ class MemoCLI extends MyMemo {
     });
 
     rl.on("close", () => {
-      const hintString = this.getMemoTitle(inputLines.join("\n"));
+      const hintString = this.getMemo(inputLines.join("\n"));
       this.save(hintString, inputLines);
     });
   }
 
   edit() {
     (async () => {
-      const memos = this.getAllMemoTitles();
+      const memos = this.getAllMemos();
       if (memos.length === 0) return;
       const editPrompt = {
         type: "select",
@@ -89,7 +89,7 @@ class MemoCLI extends MyMemo {
 
   delete() {
     (async () => {
-      const memos = this.getAllMemoTitles();
+      const memos = this.getAllMemos();
       if (memos.length === 0) return;
       const deletePrompt = {
         type: "select",

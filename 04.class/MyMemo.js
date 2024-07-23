@@ -8,7 +8,7 @@ class MyMemo extends File {
     }
   }
 
-  getAllMemoTitles() {
+  getAllMemos() {
     const memoTitles = [];
     try {
       const files = fs.readdirSync(this.memosFolderPath);
@@ -31,7 +31,7 @@ class MyMemo extends File {
     }
   }
 
-  getMemoTitle(memoInString) {
+  getMemo(memoInString) {
     return memoInString.split("\n")[0].replace(/\s+/g, "");
   }
 
