@@ -4,13 +4,14 @@ import timers from "timers/promises";
 import sqlite3 from "sqlite3";
 
 const database = new sqlite3.Database(":memory:");
-const createTableSQL = `CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);`;
-const insertSQL = `INSERT INTO books (title) VALUES (?)`;
+const createTableSQL =
+  "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);";
+const insertSQL = "INSERT INTO books (title) VALUES (?)";
 const selectSQL = "SELECT id, title FROM books";
-const dropTableSQL = `DROP TABLE IF EXISTS books`;
-const insertSQLError = `INSERT INTO boooks (title) VALUES (?)`;
-const selectSQLError = "SELECT id, tile FROM books";
-const titleNames = [
+const dropTableSQL = "DROP TABLE books";
+const insertErrorSQL = "INSERT INTO boooks (title) VALUES (?)";
+const selectErrorSQL = "SELECT id, tile FROM books";
+const titles = [
   "To Kill a Mockingbird",
   "1984",
   "The Great Gatsby",
@@ -64,21 +65,17 @@ function showStart(startType) {
 showStart("callback");
 database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
-  database.run(insertSQL, [titleNames[0]], function () {
-    console.log(`${titleNames[0]} が挿入されました。\nrowid: ${this.lastID}`);
-    database.run(insertSQL, [titleNames[1]], function () {
-      console.log(`${titleNames[1]} が挿入されました。\nrowid: ${this.lastID}`);
-      database.run(insertSQL, [titleNames[2]], function () {
-        console.log(
-          `${titleNames[2]} が挿入されました。\nrowid: ${this.lastID}`,
-        );
-        database.run(insertSQL, [titleNames[3]], function () {
-          console.log(
-            `${titleNames[3]} が挿入されました。\nrowid: ${this.lastID}`,
-          );
-          database.run(insertSQL, [titleNames[4]], function () {
+  database.run(insertSQL, [titles[0]], function () {
+    console.log(`${titles[0]} が挿入されました。\nrowid: ${this.lastID}`);
+    database.run(insertSQL, [titles[1]], function () {
+      console.log(`${titles[1]} が挿入されました。\nrowid: ${this.lastID}`);
+      database.run(insertSQL, [titles[2]], function () {
+        console.log(`${titles[2]} が挿入されました。\nrowid: ${this.lastID}`);
+        database.run(insertSQL, [titles[3]], function () {
+          console.log(`${titles[3]} が挿入されました。\nrowid: ${this.lastID}`);
+          database.run(insertSQL, [titles[4]], function () {
             console.log(
-              `${titleNames[4]} が挿入されました。\nrowid: ${this.lastID}`,
+              `${titles[4]} が挿入されました。\nrowid: ${this.lastID}`,
             );
             database.each(
               selectSQL,
@@ -106,13 +103,13 @@ showStart("callback with error");
 database.run(createTableSQL, (err) => {
   if (err) throw err;
   console.log("Books のテーブルを作成");
-  database.run(insertSQLError, [titleNames[0]], function (err) {
+  database.run(insertErrorSQL, [titles[0]], function (err) {
     try {
       if (err) throw err;
     } catch {
       console.error(err.message);
     }
-    database.each(selectSQLError, (err) => {
+    database.each(selectErrorSQL, (err) => {
       try {
         if (err) throw err;
       } catch {
@@ -133,7 +130,7 @@ showStart("Promise");
 runPromise(database, createTableSQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
-    runPromise(database, insertSQL, titleNames[0]).then((params) => {
+    runPromise(database, insertSQL, titles[0]).then((params) => {
       console.log(`${params} を挿入しました。`);
       eachPromise(database, selectSQL).then((row) => {
         console.log(`id: ${row.id} title: ${row.title}`);
@@ -152,13 +149,13 @@ showStart("Promise with error");
 runPromise(database, createTableSQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
-    runPromise(database, insertSQLError, titleNames[0])
+    runPromise(database, insertErrorSQL, titles[0])
       .then((params) => {
         console.log(`${params}`);
       })
       .catch((err) => console.error(err.message))
       .finally(() => {
-        eachPromise(database, selectSQLError)
+        eachPromise(database, selectErrorSQL)
           .catch((err) => console.error(err.message))
           .finally(() => {
             runPromise(database, dropTableSQL).then(() => {
@@ -176,13 +173,13 @@ showStart("await");
 await runPromise(database, createTableSQL);
 console.log("books テーブルを作成しました。");
 console.log(
-  `${await runPromise(database, insertSQL, titleNames[0])} を挿入しました`,
+  `${await runPromise(database, insertSQL, titles[0])} を挿入しました`,
 );
 console.log(
-  `${await runPromise(database, insertSQL, titleNames[1])} を挿入しました`,
+  `${await runPromise(database, insertSQL, titles[1])} を挿入しました`,
 );
 console.log(
-  `${await runPromise(database, insertSQL, titleNames[2])} を挿入しました`,
+  `${await runPromise(database, insertSQL, titles[2])} を挿入しました`,
 );
 const row = await eachPromise(database, selectSQL);
 console.log(`id: ${row.id} title: ${row.title}`);
@@ -196,25 +193,25 @@ showStart("await with error");
 await runPromise(database, createTableSQL);
 console.log("books テーブルを作成しました。");
 try {
-  await runPromise(database, insertSQLError, titleNames[0]);
+  await runPromise(database, insertErrorSQL, titles[0]);
 } catch (err) {
   console.error(err.message);
 }
 
 try {
-  await runPromise(database, insertSQLError, titleNames[1]);
+  await runPromise(database, insertErrorSQL, titles[1]);
 } catch (err) {
   console.error(err.message);
 }
 
 try {
-  await runPromise(database, insertSQLError, titleNames[2]);
+  await runPromise(database, insertErrorSQL, titles[2]);
 } catch (err) {
   console.error(err.message);
 }
 
 try {
-  await eachPromise(database, selectSQLError);
+  await eachPromise(database, selectErrorSQL);
 } catch (err) {
   console.error(err.message);
 }
