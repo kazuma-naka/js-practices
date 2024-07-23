@@ -47,6 +47,13 @@ function eachPromise(db, sqlQuery) {
   });
 }
 
+function closePromise(db) {
+  return new Promise((resolve) => {
+    db.close();
+    resolve();
+  });
+}
+
 function showStart(startType) {
   console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
   console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
@@ -171,3 +178,57 @@ runPromise(database, createTableSQL)
   .catch((err) => console.error(err.message));
 
 await timers.setTimeout(2500);
+
+/* await start */
+showStart("await");
+await runPromise(database, createTableSQL);
+console.log("books テーブルを作成しました。");
+console.log(
+  `${await runPromise(database, insertSQL, titleNames[0])} を挿入しました`,
+);
+console.log(
+  `${await runPromise(database, insertSQL, titleNames[1])} を挿入しました`,
+);
+console.log(
+  `${await runPromise(database, insertSQL, titleNames[2])} を挿入しました`,
+);
+const row = await eachPromise(database, selectSQL);
+console.log(`id: ${row.id} title: ${row.title}`);
+await runPromise(database, dropTableSQL);
+console.log("books テーブルをドロップしました。");
+
+await timers.setTimeout(2500);
+
+/* await with error start */
+showStart("await with error");
+await runPromise(database, createTableSQL);
+console.log("books テーブルを作成しました。");
+try {
+  await runPromise(database, insertSQLError, titleNames[0]);
+} catch (err) {
+  console.error(err.message);
+}
+
+try {
+  await runPromise(database, insertSQLError, titleNames[1]);
+} catch (err) {
+  console.error(err.message);
+}
+
+try {
+  await runPromise(database, insertSQLError, titleNames[2]);
+} catch (err) {
+  console.error(err.message);
+}
+
+try {
+  await eachPromise(database, selectSQLError);
+} catch (err) {
+  console.error(err.message);
+}
+
+await runPromise(database, dropTableSQL);
+console.log("books テーブルをドロップしました。");
+
+await closePromise(database);
+console.log("データベースをクローズする。");
