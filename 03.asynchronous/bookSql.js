@@ -62,27 +62,21 @@ function showStart(startType) {
 
 /* callback start */
 showStart("callback");
-database.run(createTableSQL, (err) => {
-  if (err) return console.error(err);
+database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
-  database.run(insertSQL, [titleNames[0]], function (err) {
-    if (err) return console.error(err);
+  database.run(insertSQL, [titleNames[0]], function () {
     console.log(`${titleNames[0]} が挿入されました。\nrowid: ${this.lastID}`);
-    database.run(insertSQL, [titleNames[1]], function (err) {
-      if (err) return console.error(err);
+    database.run(insertSQL, [titleNames[1]], function () {
       console.log(`${titleNames[1]} が挿入されました。\nrowid: ${this.lastID}`);
-      database.run(insertSQL, [titleNames[2]], function (err) {
-        if (err) return console.error(err);
+      database.run(insertSQL, [titleNames[2]], function () {
         console.log(
           `${titleNames[2]} が挿入されました。\nrowid: ${this.lastID}`,
         );
-        database.run(insertSQL, [titleNames[3]], function (err) {
-          if (err) return console.error(err);
+        database.run(insertSQL, [titleNames[3]], function () {
           console.log(
             `${titleNames[3]} が挿入されました。\nrowid: ${this.lastID}`,
           );
-          database.run(insertSQL, [titleNames[4]], function (err) {
-            if (err) return console.error(err);
+          database.run(insertSQL, [titleNames[4]], function () {
             console.log(
               `${titleNames[4]} が挿入されました。\nrowid: ${this.lastID}`,
             );
@@ -92,10 +86,8 @@ database.run(createTableSQL, (err) => {
                 if (err) return console.error(err);
                 console.log(`${row.id}: ${row.title}`);
               },
-              (err) => {
-                if (err) return console.error(err);
-                database.run(dropTableSQL, (err) => {
-                  if (err) return console.error(err);
+              () => {
+                database.run(dropTableSQL, () => {
                   console.log("テーブルを削除しました。");
                 });
               },
