@@ -18,6 +18,36 @@ const titleNames = [
   "The Catcher in the Rye",
 ];
 
+function runPromise(db, sqlQuery, params = []) {
+  return new Promise((resolve, reject) => {
+    if (typeof params === "function" || typeof params === "undefined") {
+      params = [];
+    }
+    db.run(sqlQuery, params, (err) => {
+      try {
+        if (err) throw err;
+        if (params.length != 0) resolve(params);
+        else resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
+
+function eachPromise(db, sqlQuery) {
+  return new Promise((resolve, reject) => {
+    db.each(sqlQuery, (err, row) => {
+      try {
+        if (err) throw err;
+        resolve(row);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
+
 /* callback start */
 database.run(createTableSQL, (err) => {
   if (err) return console.error(err);
@@ -93,110 +123,42 @@ database.run(createTableSQL, (err) => {
 await timers.setTimeout(2500);
 
 /* Promise start */
-const originalRun = sqlite3.Database.prototype.run;
-const originalEach = sqlite3.Database.prototype.each;
-const originalClose = sqlite3.Database.prototype.close;
-
-sqlite3.Database.prototype.run = function (sqlQuery, params = []) {
-  return new Promise((resolve, reject) => {
-    if (typeof params === "function" || typeof params === "undefined") {
-      params = [];
-    }
-    originalRun.call(this, sqlQuery, params, function (err) {
-      if (err) reject(err);
-      else {
-        if (sqlQuery === createTableSQL) console.log("Books のテーブルを作成");
-        else if (sqlQuery === insertSQL)
-          console.log(`${params} が挿入されました。\nrowid: ${this.lastID}`);
-        else if (sqlQuery === dropTableSQL)
-          console.log("テーブルを削除しました。");
-        else console.log("不正な SQL クエリです");
-        resolve();
-      }
+runPromise(database, createTableSQL)
+  .then(() => {
+    console.log("books テーブルを作成しました。");
+    runPromise(database, insertSQL, titleNames[0]).then((params) => {
+      console.log(`${params} を挿入しました。`);
+      eachPromise(database, selectSQL).then((row) => {
+        console.log(`id: ${row.id} title: ${row.title}`);
+        runPromise(database, dropTableSQL).then(() => {
+          console.log("books テーブルをドロップしました。");
+        });
+      });
     });
-  });
-};
-
-sqlite3.Database.prototype.each = function (sqlQuery) {
-  return new Promise((resolve, reject) => {
-    originalEach.call(this, sqlQuery, function (err, row) {
-      if (err) reject(err);
-      else console.log(`${row.id}: ${row.title}`);
-    });
-    resolve();
-  });
-};
-
-sqlite3.Database.prototype.close = function () {
-  return new Promise((resolve, reject) => {
-    originalClose.call(this, function (err) {
-      if (err) reject(err);
-      else {
-        console.log("データベースをクローズしました。");
-        resolve();
-      }
-    });
-  });
-};
-
-database
-  .run(createTableSQL)
-  .then(() => database.run(insertSQL, [titleNames[0]]))
-  .then(() => database.run(insertSQL, [titleNames[1]]))
-  .then(() => database.run(insertSQL, [titleNames[2]]))
-  .then(() => database.run(insertSQL, [titleNames[3]]))
-  .then(() => database.run(insertSQL, [titleNames[4]]))
-  .then(() => database.each(selectSQL))
-  .then(() => database.run(dropTableSQL))
+  })
   .catch((err) => console.error(err));
 
 await timers.setTimeout(2500);
 
 /* Promise with error start */
-database
-  .run(createTableSQL)
-  .then(() => database.run(insertSQLError, [titleNames[0]]))
-  .then(() => database.run(insertSQLError, [titleNames[1]]))
-  .then(() => database.run(insertSQLError, [titleNames[2]]))
-  .then(() => database.run(insertSQLError, [titleNames[3]]))
-  .then(() => database.run(insertSQLError, [titleNames[4]]))
-  .then(() => database.each(selectSQLError))
-  .then(() => database.run(dropTableSQL))
-  .catch((err) => console.error(err));
+runPromise(database, createTableSQL)
+  .then(() => {
+    console.log("books テーブルを作成しました。");
+    runPromise(database, insertSQLError, titleNames[0])
+      .then((params) => {
+        console.log(`${params}`);
+      })
+      .catch((err) => console.error(err.message))
+      .finally(() => {
+        eachPromise(database, selectSQLError)
+          .catch((err) => console.error(err.message))
+          .finally(() => {
+            runPromise(database, dropTableSQL).then(() => {
+              console.log("books テーブルをドロップしました。");
+            });
+          });
+      });
+  })
+  .catch((err) => console.error(err.message));
 
 await timers.setTimeout(2500);
-
-/* async await start */
-(async () => {
-  try {
-    await database.run(createTableSQL);
-    await database.run(insertSQL, [titleNames[0]]);
-    await database.run(insertSQL, [titleNames[1]]);
-    await database.run(insertSQL, [titleNames[2]]);
-    await database.run(insertSQL, [titleNames[3]]);
-    await database.run(insertSQL, [titleNames[4]]);
-    await database.each(selectSQL);
-    await database.run(dropTableSQL);
-  } catch (error) {
-    console.error(error);
-  }
-})();
-
-await timers.setTimeout(2500);
-
-/* async await with error start */
-(async () => {
-  try {
-    await database.run(createTableSQL);
-    await database.run(insertSQLError, [titleNames[0]]);
-    await database.run(insertSQLError, [titleNames[1]]);
-    await database.run(insertSQLError, [titleNames[2]]);
-    await database.run(insertSQLError, [titleNames[3]]);
-    await database.run(insertSQLError, [titleNames[4]]);
-    await database.each(selectSQLError);
-    await database.run(dropTableSQL);
-    await database.close();
-  } catch (error) {
-    console.error(error);
-  }
-})();
