@@ -7,7 +7,7 @@ const database = new sqlite3.Database(":memory:");
 const createTableSQL =
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);";
 const insertSQL = "INSERT INTO books (title) VALUES (?)";
-const selectSQL = "SELECT id, title FROM books";
+const selectSQL = "SELECT DISTINCT id, title FROM books ORDER BY id";
 const dropTableSQL = "DROP TABLE books";
 const insertErrorSQL = "INSERT INTO boooks (title) VALUES (?)";
 const selectErrorSQL = "SELECT id, tile FROM books";
@@ -35,12 +35,12 @@ function runPromise(db, sqlQuery, params = []) {
   });
 }
 
-function eachPromise(db, sqlQuery) {
+function allPromise(db, sqlQuery) {
   return new Promise((resolve, reject) => {
-    db.each(sqlQuery, (err, row) => {
+    db.all(sqlQuery, (err, rows) => {
       try {
         if (err) throw err;
-        resolve(row);
+        resolve(rows);
       } catch (err) {
         reject(err);
       }
@@ -132,8 +132,10 @@ runPromise(database, createTableSQL)
     console.log("books テーブルを作成しました。");
     runPromise(database, insertSQL, titles[0]).then((params) => {
       console.log(`${params} を挿入しました。`);
-      eachPromise(database, selectSQL).then((row) => {
-        console.log(`id: ${row.id} title: ${row.title}`);
+      allPromise(database, selectSQL).then((rows) => {
+        for (let row of rows) {
+          console.log(`id: ${row.id} title: ${row.title}`);
+        }
         runPromise(database, dropTableSQL).then(() => {
           console.log("books テーブルをドロップしました。");
         });
@@ -155,7 +157,7 @@ runPromise(database, createTableSQL)
       })
       .catch((err) => console.error(err.message))
       .finally(() => {
-        eachPromise(database, selectErrorSQL)
+        allPromise(database, selectErrorSQL)
           .catch((err) => console.error(err.message))
           .finally(() => {
             runPromise(database, dropTableSQL).then(() => {
@@ -181,8 +183,10 @@ console.log(
 console.log(
   `${await runPromise(database, insertSQL, titles[2])} を挿入しました`,
 );
-const row = await eachPromise(database, selectSQL);
-console.log(`id: ${row.id} title: ${row.title}`);
+const rows = await allPromise(database, selectSQL);
+for (let row of rows) {
+  console.log(`id: ${row.id} title: ${row.title}`);
+}
 await runPromise(database, dropTableSQL);
 console.log("books テーブルをドロップしました。");
 
@@ -211,7 +215,7 @@ try {
 }
 
 try {
-  await eachPromise(database, selectErrorSQL);
+  await allPromise(database, selectErrorSQL);
 } catch (err) {
   console.error(err.message);
 }
