@@ -1,18 +1,47 @@
-import MemoCLI from "./MemoCLI.js";
+import fs from "fs";
+import File from "./File.js";
 
-class MyMemo extends MemoCLI {
-  constructor() {
-    super();
+class MyMemo extends File {
+  createMemoDirectory() {
+    if (!fs.existsSync(this.memosFolderPath)) {
+      fs.mkdirSync(this.memosFolderPath);
+    }
   }
-  createCLI() {
-    this.createMemoDirectory();
-    if (process.argv.length > 2) {
-      const argument = process.argv.slice(2)[0];
-      if (argument === "-l") this.lookUp();
-      else if (argument === "-r") this.reference();
-      else if (argument === "-d") this.delete();
-      else if (argument === "-e") this.edit();
-    } else this.create();
+
+  getAllMemoTitles() {
+    const memoTitles = [];
+    try {
+      const files = fs.readdirSync(this.memosFolderPath);
+      for (const file of files) {
+        memoTitles.push(file);
+      }
+      return memoTitles;
+    } catch (err) {
+      console.error(`ファイルの取得に失敗しました: ` + err);
+      return memoTitles;
+    }
+  }
+
+  getMemoContent(fileName) {
+    try {
+      const data = fs.readFileSync(this.getFilePath(fileName), "utf8");
+      return data;
+    } catch (err) {
+      return console.error(`${fileName}.txt の取得に失敗しました: ` + err);
+    }
+  }
+
+  getMemoTitle(memoInString) {
+    return memoInString.split("\n")[0].replace(/\s+/g, "");
+  }
+
+  deleteMemo(fileName) {
+    try {
+      fs.unlinkSync(this.getFilePath(fileName));
+      console.log(`${fileName} を削除しました`);
+    } catch (err) {
+      console.error(`${fileName} の削除に失敗しました: `, err);
+    }
   }
 }
 

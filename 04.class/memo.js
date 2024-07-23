@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import MyMemo from "./MyMemo.js";
+import MemoCLI from "./MemoCLI.js";
 
-const myMemo = new MyMemo();
-myMemo.createCLI();
+const memoCLI = new MemoCLI();
+memoCLI.createCLI();

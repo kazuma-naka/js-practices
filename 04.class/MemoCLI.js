@@ -2,13 +2,22 @@ import fs from "fs";
 import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
-import FileUtils from "./utils/FileUtils.js";
-import BaseMemo from "./BaseMemo.js";
-import EditorUtils from "./utils/EditorUtil.js";
+import MyMemo from "./MyMemo.js";
 
-class MemoCLI extends EditorUtils(FileUtils(BaseMemo)) {
+class MemoCLI extends MyMemo {
   constructor() {
     super();
+  }
+
+  createCLI() {
+    this.createMemoDirectory();
+    if (process.argv.length > 2) {
+      const argument = process.argv.slice(2)[0];
+      if (argument === "-l") this.lookUp();
+      else if (argument === "-r") this.reference();
+      else if (argument === "-d") this.delete();
+      else if (argument === "-e") this.edit();
+    } else this.create();
   }
 
   lookUp() {
