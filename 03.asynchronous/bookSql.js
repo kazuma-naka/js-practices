@@ -26,7 +26,9 @@ function runPromise(db, sqlQuery, params = []) {
     }
     db.run(sqlQuery, params, (err) => {
       try {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         resolve(params.length ? params : []);
       } catch (err) {
         reject(err);
@@ -39,7 +41,9 @@ function allPromise(db, sqlQuery) {
   return new Promise((resolve, reject) => {
     db.all(sqlQuery, (err, rows) => {
       try {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         resolve(rows);
       } catch (err) {
         reject(err);
@@ -80,8 +84,14 @@ database.run(createTableSQL, () => {
             database.each(
               selectSQL,
               (err, row) => {
-                if (err) return console.error(err);
-                console.log(`${row.id}: ${row.title}`);
+                try {
+                  if (err) {
+                    throw err;
+                  }
+                  console.log(`${row.id}: ${row.title}`);
+                } catch (err) {
+                  console.error(err.message);
+                }
               },
               () => {
                 database.run(dropTableSQL, () => {
@@ -100,23 +110,25 @@ await timers.setTimeout(2500);
 
 /* callback with error start */
 showStart("callback with error");
-database.run(createTableSQL, (err) => {
-  if (err) throw err;
+database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
   database.run(insertErrorSQL, [titles[0]], function (err) {
     try {
-      if (err) throw err;
+      if (err) {
+        throw err;
+      }
     } catch {
       console.error(err.message);
     }
     database.each(selectErrorSQL, (err) => {
       try {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
       } catch {
         console.error(err.message);
       }
-      database.run(dropTableSQL, (err) => {
-        if (err) throw err;
+      database.run(dropTableSQL, () => {
         console.log("テーブルを削除しました。");
       });
     });
