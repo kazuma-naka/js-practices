@@ -26,8 +26,7 @@ function runPromise(db, sqlQuery, params = []) {
     db.run(sqlQuery, params, (err) => {
       try {
         if (err) throw err;
-        if (params.length != 0) resolve(params);
-        else resolve();
+        resolve(params.length ? params : []);
       } catch (err) {
         reject(err);
       }
@@ -49,9 +48,9 @@ function eachPromise(db, sqlQuery) {
 }
 
 function showStart(startType) {
-  console.log('\x1b[36m%s\x1b[0m',"-".repeat(30));
-  console.log('\x1b[36m%s\x1b[0m',`${startType} を開始`);
-  console.log('\x1b[36m%s\x1b[0m',"-".repeat(30));
+  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
+  console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
+  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
 }
 
 /* callback start */
