@@ -48,7 +48,14 @@ function eachPromise(db, sqlQuery) {
   });
 }
 
+function showStart(startType) {
+  console.log('\x1b[36m%s\x1b[0m',"-".repeat(30));
+  console.log('\x1b[36m%s\x1b[0m',`${startType} を開始`);
+  console.log('\x1b[36m%s\x1b[0m',"-".repeat(30));
+}
+
 /* callback start */
+showStart("callback");
 database.run(createTableSQL, (err) => {
   if (err) return console.error(err);
   console.log("Books のテーブルを作成");
@@ -97,6 +104,7 @@ database.run(createTableSQL, (err) => {
 await timers.setTimeout(2500);
 
 /* callback with error start */
+showStart("callback with error");
 database.run(createTableSQL, (err) => {
   if (err) throw err;
   console.log("Books のテーブルを作成");
@@ -123,6 +131,7 @@ database.run(createTableSQL, (err) => {
 await timers.setTimeout(2500);
 
 /* Promise start */
+showStart("Promise");
 runPromise(database, createTableSQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
@@ -141,6 +150,7 @@ runPromise(database, createTableSQL)
 await timers.setTimeout(2500);
 
 /* Promise with error start */
+showStart("Promise with error");
 runPromise(database, createTableSQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
