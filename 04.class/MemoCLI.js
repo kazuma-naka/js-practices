@@ -1,9 +1,9 @@
 import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
-import MyMemo from "./MyMemo.js";
+import MemoText from "./MemoText.js";
 
-class MemoCLI extends MyMemo {
+class MemoCLI extends MemoText {
   constructor() {
     super();
   }
@@ -119,7 +119,6 @@ class MemoCLI extends MyMemo {
       return this.save(hintString, inputLines);
     }
     this.saveMemo(response.memo, inputLines);
-    console.log(`${response.memo}.txt が作成されました。`);
   }
 }
 

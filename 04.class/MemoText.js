@@ -1,7 +1,7 @@
 import fs from "fs";
 import File from "./File.js";
 
-class MyMemo extends File {
+class MemoText extends File {
   createMemoDirectory() {
     if (!fs.existsSync(this.memosFolderPath)) {
       fs.mkdirSync(this.memosFolderPath);
@@ -49,10 +49,13 @@ class MyMemo extends File {
       this.getFilePathWithTxt(memo),
       inputLines.join("\n"),
       (err) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
+        console.log(`${memo}.txt が作成されました。`);
       },
     );
   }
 }
 
-export default MyMemo;
+export default MemoText;
