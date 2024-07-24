@@ -102,35 +102,27 @@ class MemoCLI extends MyMemo {
     })();
   }
 
-  save(hintString, inputLines) {
-    (async () => {
-      const savePrompt = {
-        type: "input",
-        name: "memoTitle",
-        message: "",
-        initial: hintString,
-      };
-      const response = await enquirer.prompt(savePrompt);
-      if (this.isValidFileName(response.memoTitle)) {
-        if (this.hasSameFile(response.memoTitle)) {
-          console.log(
-            `${response.memoTitle}.txt はすでに存在します。\n別の名前をつけてください。`,
-          );
-          return this.save(hintString, inputLines);
-        }
-        fs.writeFile(
-          this.getFilePathWithTxt(response.memoTitle),
-          inputLines.join("\n"),
-          (err) => {
-            if (err) throw err;
-          },
+  async save(hintString, inputLines) {
+    const savePrompt = {
+      type: "input",
+      name: "memo",
+      message: "",
+      initial: hintString,
+    };
+    const response = await enquirer.prompt(savePrompt);
+    if (this.isValidFileName(response.memo)) {
+      if (this.hasSameFile(response.memo)) {
+        console.log(
+          `${response.memo}.txt はすでに存在します。\n別の名前をつけてください。`,
         );
-        console.log(`${response.memoTitle}.txt が作成されました。`);
-      } else {
-        console.log(`${response.memoTitle} は不正な名前です。`);
         return this.save(hintString, inputLines);
       }
-    })();
+      this.saveMemo(response.memo, inputLines);
+      console.log(`${response.memo}.txt が作成されました。`);
+    } else {
+      console.log(`${response.memo} は不正な名前です。`);
+      return this.save(hintString, inputLines);
+    }
   }
 }
 

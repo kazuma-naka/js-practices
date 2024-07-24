@@ -43,6 +43,16 @@ class MyMemo extends File {
       console.error(`${fileName} の削除に失敗しました: `, err);
     }
   }
+
+  saveMemo(memo,inputLines){
+    fs.writeFile(
+      this.getFilePathWithTxt(memo),
+      inputLines.join("\n"),
+      (err) => {
+        if (err) throw err;
+      },
+    );
+  }
 }
 
 export default MyMemo;
