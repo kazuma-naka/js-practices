@@ -12,11 +12,18 @@ class MemoCLI extends MemoText {
     this.createMemoDirectory();
     if (process.argv.length > 2) {
       const argument = process.argv.slice(2)[0];
-      if (argument === "-l") this.lookUp();
-      else if (argument === "-r") this.reference();
-      else if (argument === "-d") this.delete();
-      else if (argument === "-e") this.edit();
-    } else this.create();
+      if (argument === "-l") {
+        this.lookUp();
+      } else if (argument === "-r") {
+        this.reference();
+      } else if (argument === "-d") {
+        this.delete();
+      } else if (argument === "-e") {
+        this.edit();
+      }
+    } else {
+      this.create();
+    }
   }
 
   lookUp() {
@@ -25,19 +32,17 @@ class MemoCLI extends MemoText {
     }
   }
 
-  reference() {
-    (async () => {
-      const memos = this.getAllMemos();
-      if (memos.length === 0) return;
-      const referencePrompt = {
-        type: "select",
-        name: "memoTitle",
-        message: "Enter キーでメモを表示",
-        choices: memos,
-      };
-      const response = await enquirer.prompt(referencePrompt);
-      console.log(this.getMemoContent(response.memoTitle));
-    })();
+  async reference() {
+    const memos = this.getAllMemos();
+    if (memos.length === 0) return;
+    const referencePrompt = {
+      type: "select",
+      name: "memo",
+      message: "Enter キーでメモを表示",
+      choices: memos,
+    };
+    const response = await enquirer.prompt(referencePrompt);
+    console.log(this.getMemoContent(response.memo));
   }
 
   create() {
@@ -51,8 +56,11 @@ class MemoCLI extends MemoText {
     console.log("eof で入力を終了");
 
     rl.on("line", (input) => {
-      if (input.trim().toUpperCase() === "EOF") rl.close();
-      else inputLines.push(input);
+      if (input.trim().toUpperCase() === "EOF") {
+        rl.close();
+      } else {
+        inputLines.push(input);
+      }
     });
 
     rl.on("close", () => {
@@ -61,44 +69,42 @@ class MemoCLI extends MemoText {
     });
   }
 
-  edit() {
-    (async () => {
-      const memos = this.getAllMemos();
-      if (memos.length === 0) return;
-      const editPrompt = {
-        type: "select",
-        name: "memoTitle",
-        message: "Enter キーでメモを編集",
-        choices: memos,
-      };
-      const response = await enquirer.prompt(editPrompt);
-      const editor = this.getEditorName();
+  async edit() {
+    const memos = this.getAllMemos();
+    if (memos.length === 0) return;
+    const editPrompt = {
+      type: "select",
+      name: "memo",
+      message: "Enter キーでメモを編集",
+      choices: memos,
+    };
+    const response = await enquirer.prompt(editPrompt);
+    const editor = this.getEditorName();
 
-      if (editor) {
-        try {
-          execSync(`${editor} ${this.getFilePath(response.memoTitle)}`, {
-            stdio: "inherit",
-          });
-        } catch (error) {
-          console.error(`${editor} の起動に失敗しました: ${error.message}`);
-        }
-      } else console.error("環境変数 EDITOR が設定されていません。");
-    })();
+    if (editor) {
+      try {
+        execSync(`${editor} ${this.getFilePath(response.memo)}`, {
+          stdio: "inherit",
+        });
+      } catch (error) {
+        console.error(`${editor} の起動に失敗しました: ${error.message}`);
+      }
+    } else {
+      console.error("環境変数 EDITOR が設定されていません。");
+    }
   }
 
-  delete() {
-    (async () => {
-      const memos = this.getAllMemos();
-      if (memos.length === 0) return;
-      const deletePrompt = {
-        type: "select",
-        name: "memoTitle",
-        message: "Enter キーでメモを削除",
-        choices: memos,
-      };
-      const response = await enquirer.prompt(deletePrompt);
-      this.deleteMemo(response.memoTitle);
-    })();
+  async delete() {
+    const memos = this.getAllMemos();
+    if (memos.length === 0) return;
+    const deletePrompt = {
+      type: "select",
+      name: "memo",
+      message: "Enter キーでメモを削除",
+      choices: memos,
+    };
+    const response = await enquirer.prompt(deletePrompt);
+    this.deleteMemo(response.memo);
   }
 
   async save(hintString, inputLines) {

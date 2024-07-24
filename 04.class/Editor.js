@@ -1,5 +1,5 @@
 class Editor {
-  getName() {
+  getEditorName() {
     const editor = process.env.EDITOR;
     if (editor) {
       return editor;
