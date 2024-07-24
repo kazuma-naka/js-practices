@@ -44,7 +44,7 @@ class MyMemo extends File {
     }
   }
 
-  saveMemo(memo,inputLines){
+  saveMemo(memo, inputLines) {
     fs.writeFile(
       this.getFilePathWithTxt(memo),
       inputLines.join("\n"),

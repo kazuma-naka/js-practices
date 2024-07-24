@@ -1,4 +1,3 @@
-import fs from "fs";
 import readline from "readline";
 import { execSync } from "child_process";
 import enquirer from "enquirer";
@@ -110,19 +109,17 @@ class MemoCLI extends MyMemo {
       initial: hintString,
     };
     const response = await enquirer.prompt(savePrompt);
-    if (this.isValidFileName(response.memo)) {
-      if (this.hasSameFile(response.memo)) {
-        console.log(
-          `${response.memo}.txt はすでに存在します。\n別の名前をつけてください。`,
-        );
-        return this.save(hintString, inputLines);
-      }
-      this.saveMemo(response.memo, inputLines);
-      console.log(`${response.memo}.txt が作成されました。`);
-    } else {
+    if (!this.isValidFileName(response.memo)) {
       console.log(`${response.memo} は不正な名前です。`);
       return this.save(hintString, inputLines);
     }
+    if (this.hasSameFile(response.memo)) {
+      console.log(`${response.memo}.txt はすでに存在します。`);
+      console.log("別の名前をつけてください。");
+      return this.save(hintString, inputLines);
+    }
+    this.saveMemo(response.memo, inputLines);
+    console.log(`${response.memo}.txt が作成されました。`);
   }
 }
 
