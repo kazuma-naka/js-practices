@@ -1,6 +1,6 @@
 import path from "path";
-import Editor from "./Editor.js";
 import fs from "fs";
+import Editor from "./Editor.js";
 
 class File extends Editor {
   memosFolderPath = "./memos";
