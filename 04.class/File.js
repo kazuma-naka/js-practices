@@ -4,6 +4,13 @@ import fs from "fs";
 
 class File extends Editor {
   memosFolderPath = "./memos";
+
+  createMemoDirectory() {
+    if (!fs.existsSync(this.memosFolderPath)) {
+      fs.mkdirSync(this.memosFolderPath);
+    }
+  }
+
   getFilePath(fileName) {
     return path.join(this.memosFolderPath, fileName);
   }

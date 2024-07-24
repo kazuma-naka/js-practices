@@ -2,12 +2,6 @@ import fs from "fs";
 import File from "./File.js";
 
 class MemoText extends File {
-  createMemoDirectory() {
-    if (!fs.existsSync(this.memosFolderPath)) {
-      fs.mkdirSync(this.memosFolderPath);
-    }
-  }
-
   getAllMemos() {
     const memoTitles = [];
     try {
@@ -27,20 +21,23 @@ class MemoText extends File {
       const data = fs.readFileSync(this.getFilePath(fileName), "utf8");
       return data;
     } catch (err) {
-      return console.error(`${fileName}.txt の取得に失敗しました: ` + err);
+      console.error(`${fileName}.txt の取得に失敗しました: ` + err);
+      return;
     }
   }
 
-  getMemo(memoInString) {
-    return memoInString.split("\n")[0].replace(/\s+/g, "");
+  getMemo(memo) {
+    return memo.split("\n")[0].replace(/\s+/g, "");
   }
 
   deleteMemo(fileName) {
     try {
       fs.unlinkSync(this.getFilePath(fileName));
       console.log(`${fileName} を削除しました`);
+      return true;
     } catch (err) {
       console.error(`${fileName} の削除に失敗しました: `, err);
+      return false;
     }
   }
 
@@ -50,7 +47,8 @@ class MemoText extends File {
       inputLines.join("\n"),
       (err) => {
         if (err) {
-          throw err;
+          console.error(err.message);
+          return;
         }
         console.log(`${memo}.txt が作成されました。`);
       },

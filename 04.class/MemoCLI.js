@@ -64,8 +64,8 @@ class MemoCLI extends MemoText {
     });
 
     rl.on("close", () => {
-      const hintString = this.getMemo(inputLines.join("\n"));
-      this.#save(hintString, inputLines);
+      const hint = this.getMemo(inputLines.join("\n"));
+      this.#save(hint, inputLines);
     });
   }
 
@@ -107,21 +107,21 @@ class MemoCLI extends MemoText {
     this.deleteMemo(response.memo);
   }
 
-  async #save(hintString, inputLines) {
+  async #save(hint, inputLines) {
     const savePrompt = {
       type: "input",
       name: "memo",
-      initial: hintString,
+      initial: hint,
     };
     const response = await enquirer.prompt(savePrompt);
     if (!this.isValidFileName(response.memo)) {
       console.log(`${response.memo} は不正な名前です。`);
-      return this.#save(hintString, inputLines);
+      return this.#save(hint, inputLines);
     }
     if (this.hasSameFile(response.memo)) {
       console.log(`${response.memo}.txt はすでに存在します。`);
       console.log("別の名前をつけてください。");
-      return this.#save(hintString, inputLines);
+      return this.#save(hint, inputLines);
     }
     this.saveMemo(response.memo, inputLines);
   }
