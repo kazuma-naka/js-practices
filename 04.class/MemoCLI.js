@@ -13,26 +13,26 @@ class MemoCLI extends MemoText {
     if (process.argv.length > 2) {
       const argument = process.argv.slice(2)[0];
       if (argument === "-l") {
-        this.lookUp();
+        this.#lookUp();
       } else if (argument === "-r") {
-        this.reference();
+        this.#reference();
       } else if (argument === "-d") {
-        this.delete();
+        this.#delete();
       } else if (argument === "-e") {
-        this.edit();
+        this.#edit();
       }
     } else {
-      this.create();
+      this.#create();
     }
   }
 
-  lookUp() {
+  #lookUp() {
     for (const memo of this.getAllMemos()) {
       console.log(memo.toString());
     }
   }
 
-  async reference() {
+  async #reference() {
     const memos = this.getAllMemos();
     if (memos.length === 0) return;
     const referencePrompt = {
@@ -45,7 +45,7 @@ class MemoCLI extends MemoText {
     console.log(this.getMemoContent(response.memo));
   }
 
-  create() {
+  #create() {
     let inputLines = [];
     const rl = readline.createInterface({
       input: process.stdin,
@@ -65,11 +65,11 @@ class MemoCLI extends MemoText {
 
     rl.on("close", () => {
       const hintString = this.getMemo(inputLines.join("\n"));
-      this.save(hintString, inputLines);
+      this.#save(hintString, inputLines);
     });
   }
 
-  async edit() {
+  async #edit() {
     const memos = this.getAllMemos();
     if (memos.length === 0) return;
     const editPrompt = {
@@ -94,7 +94,7 @@ class MemoCLI extends MemoText {
     }
   }
 
-  async delete() {
+  async #delete() {
     const memos = this.getAllMemos();
     if (memos.length === 0) return;
     const deletePrompt = {
@@ -107,22 +107,21 @@ class MemoCLI extends MemoText {
     this.deleteMemo(response.memo);
   }
 
-  async save(hintString, inputLines) {
+  async #save(hintString, inputLines) {
     const savePrompt = {
       type: "input",
       name: "memo",
-      message: "",
       initial: hintString,
     };
     const response = await enquirer.prompt(savePrompt);
     if (!this.isValidFileName(response.memo)) {
       console.log(`${response.memo} は不正な名前です。`);
-      return this.save(hintString, inputLines);
+      return this.#save(hintString, inputLines);
     }
     if (this.hasSameFile(response.memo)) {
       console.log(`${response.memo}.txt はすでに存在します。`);
       console.log("別の名前をつけてください。");
-      return this.save(hintString, inputLines);
+      return this.#save(hintString, inputLines);
     }
     this.saveMemo(response.memo, inputLines);
   }
