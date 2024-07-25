@@ -182,22 +182,50 @@ showStart("Promise with error");
 runPromise(database, createTableSQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
-    runPromise(database, insertErrorSQL, titles[0])
-      .then((params) => {
-        console.log(`${params}`);
-      })
-      .catch((err) => console.error(err.message))
-      .finally(() => {
-        allPromise(database, selectErrorSQL)
-          .catch((err) => console.error(err.message))
-          .finally(() => {
-            runPromise(database, dropTableSQL).then(() => {
-              console.log("books テーブルをドロップしました。");
-            });
-          });
-      });
+    return runPromise(database, insertErrorSQL, titles[0]);
   })
-  .catch((err) => console.error(err.message));
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    return runPromise(database, insertErrorSQL, titles[1]);
+  })
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    return runPromise(database, insertErrorSQL, titles[2]);
+  })
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    return runPromise(database, insertErrorSQL, titles[3]);
+  })
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    return runPromise(database, insertErrorSQL, titles[4]);
+  })
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    return allPromise(database, selectErrorSQL);
+  })
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    return runPromise(database, dropTableSQL);
+  })
+  .catch((err) => {
+    handleErrorSQL(err);
+  })
+  .then(() => {
+    console.log("books テーブルをドロップしました。");
+  });
 
 await timers.setTimeout(2500);
 
