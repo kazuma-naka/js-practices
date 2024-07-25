@@ -59,6 +59,14 @@ function closePromise(db) {
   });
 }
 
+function handleErrorSQL(err) {
+  if (err instanceof Error) {
+    if (err.code === "SQLITE_ERROR") {
+      console.error(err.message);
+    }
+  }
+}
+
 function showStart(startType) {
   console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
   console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
@@ -106,38 +114,21 @@ showStart("callback with error");
 database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
   database.run(insertErrorSQL, [titles[0]], function (err) {
-    if (err.code === "SQLITE_ERROR") {
-      console.error(err.message);
-    }
+    handleErrorSQL(err);
     database.run(insertErrorSQL, [titles[1]], function (err) {
-      if (err.code === "SQLITE_ERROR") {
-        console.error(err.message);
-      }
+      handleErrorSQL(err);
       database.run(insertErrorSQL, [titles[2]], function (err) {
-        if (err.code === "SQLITE_ERROR") {
-          console.error(err.message);
-        }
+        handleErrorSQL(err);
         database.run(insertErrorSQL, [titles[3]], function (err) {
-          if (err.code === "SQLITE_ERROR") {
-            console.error(err.message);
-          }
+          handleErrorSQL(err);
           database.run(insertErrorSQL, [titles[4]], function (err) {
-            if (err.code === "SQLITE_ERROR") {
-              console.error(err.message);
-            }
-            database.all(
-              selectErrorSQL,
-              (err) => {
-                if (err.code === "SQLITE_ERROR") {
-                  console.error(err.message);
-                }
-              },
-              () => {
-                database.run(dropTableSQL, () => {
-                  console.log("テーブルを削除しました。");
-                });
-              },
-            );
+            handleErrorSQL(err);
+            database.all(selectErrorSQL, (err) => {
+              handleErrorSQL(err);
+              database.run(dropTableSQL, () => {
+                console.log("テーブルを削除しました。");
+              });
+            });
           });
         });
       });
