@@ -157,19 +157,37 @@ showStart("Promise");
 runPromise(database, createTableSQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
-    runPromise(database, insertSQL, titles[0]).then((params) => {
-      console.log(`${params} を挿入しました。`);
-      allPromise(database, selectSQL).then((rows) => {
-        for (let row of rows) {
-          console.log(`id: ${row.id} title: ${row.title}`);
-        }
-        runPromise(database, dropTableSQL).then(() => {
-          console.log("books テーブルをドロップしました。");
-        });
-      });
-    });
+    return runPromise(database, insertSQL, titles[0]);
   })
-  .catch((err) => console.error(err));
+  .then((params) => {
+    console.log(`${params} を挿入しました。`);
+    return runPromise(database, insertSQL, titles[1]);
+  })
+  .then((params) => {
+    console.log(`${params} を挿入しました。`);
+    return runPromise(database, insertSQL, titles[2]);
+  })
+  .then((params) => {
+    console.log(`${params} を挿入しました。`);
+    return runPromise(database, insertSQL, titles[3]);
+  })
+  .then((params) => {
+    console.log(`${params} を挿入しました。`);
+    return runPromise(database, insertSQL, titles[4]);
+  })
+  .then((params) => {
+    console.log(`${params} を挿入しました。`);
+    return allPromise(database, selectSQL);
+  })
+  .then((rows) => {
+    for (let row of rows) {
+      console.log(`id: ${row.id} title: ${row.title}`);
+    }
+    return runPromise(database, dropTableSQL);
+  })
+  .then(() => {
+    console.log("books テーブルをドロップしました。");
+  });
 
 await timers.setTimeout(2500);
 
