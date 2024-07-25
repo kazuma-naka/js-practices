@@ -242,6 +242,12 @@ console.log(
 console.log(
   `${await runPromise(database, insertSQL, titles[2])} を挿入しました`,
 );
+console.log(
+  `${await runPromise(database, insertSQL, titles[3])} を挿入しました`,
+);
+console.log(
+  `${await runPromise(database, insertSQL, titles[4])} を挿入しました`,
+);
 const rows = await allPromise(database, selectSQL);
 for (let row of rows) {
   console.log(`id: ${row.id} title: ${row.title}`);
@@ -258,25 +264,37 @@ console.log("books テーブルを作成しました。");
 try {
   await runPromise(database, insertErrorSQL, titles[0]);
 } catch (err) {
-  console.error(err.message);
+  handleErrorSQL(err);
 }
 
 try {
   await runPromise(database, insertErrorSQL, titles[1]);
 } catch (err) {
-  console.error(err.message);
+  handleErrorSQL(err);
 }
 
 try {
   await runPromise(database, insertErrorSQL, titles[2]);
 } catch (err) {
-  console.error(err.message);
+  handleErrorSQL(err);
+}
+
+try {
+  await runPromise(database, insertErrorSQL, titles[3]);
+} catch (err) {
+  handleErrorSQL(err);
+}
+
+try {
+  await runPromise(database, insertErrorSQL, titles[4]);
+} catch (err) {
+  handleErrorSQL(err);
 }
 
 try {
   await allPromise(database, selectErrorSQL);
 } catch (err) {
-  console.error(err.message);
+  handleErrorSQL(err);
 }
 
 await runPromise(database, dropTableSQL);
