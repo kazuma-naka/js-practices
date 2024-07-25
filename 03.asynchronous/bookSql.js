@@ -111,23 +111,35 @@ showStart("callback with error");
 database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
   database.run(insertErrorSQL, [titles[0]], function (err) {
-    try {
-      if (err) {
-        throw err;
-      }
-    } catch {
+    if (err.code === "SQLITE_ERROR") {
       console.error(err.message);
     }
-    database.all(selectErrorSQL, (err) => {
-      try {
-        if (err) {
-          throw err;
-        }
-      } catch {
+    database.run(insertErrorSQL, [titles[1]], function (err) {
+      if (err.code === "SQLITE_ERROR") {
         console.error(err.message);
       }
-      database.run(dropTableSQL, () => {
-        console.log("テーブルを削除しました。");
+      database.run(insertErrorSQL, [titles[2]], function (err) {
+        if (err.code === "SQLITE_ERROR") {
+          console.error(err.message);
+        }
+        database.run(insertErrorSQL, [titles[3]], function (err) {
+          if (err.code === "SQLITE_ERROR") {
+            console.error(err.message);
+          }
+          database.run(insertErrorSQL, [titles[4]], function (err) {
+            if (err.code === "SQLITE_ERROR") {
+              console.error(err.message);
+            }
+            database.all(selectErrorSQL, (err) => {
+              if (err.code === "SQLITE_ERROR") {
+                console.error(err.message);
+              }
+              database.run(dropTableSQL, () => {
+                console.log("テーブルを削除しました。");
+              });
+            });
+          });
+        });
       });
     });
   });
