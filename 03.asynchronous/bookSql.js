@@ -130,14 +130,19 @@ database.run(createTableSQL, () => {
             if (err.code === "SQLITE_ERROR") {
               console.error(err.message);
             }
-            database.all(selectErrorSQL, (err) => {
-              if (err.code === "SQLITE_ERROR") {
-                console.error(err.message);
-              }
-              database.run(dropTableSQL, () => {
-                console.log("テーブルを削除しました。");
-              });
-            });
+            database.all(
+              selectErrorSQL,
+              (err) => {
+                if (err.code === "SQLITE_ERROR") {
+                  console.error(err.message);
+                }
+              },
+              () => {
+                database.run(dropTableSQL, () => {
+                  console.log("テーブルを削除しました。");
+                });
+              },
+            );
           });
         });
       });
