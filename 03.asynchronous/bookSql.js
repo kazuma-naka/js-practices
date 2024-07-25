@@ -70,33 +70,28 @@ showStart("callback");
 database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
   database.run(insertSQL, [titles[0]], function () {
-    console.log(`${titles[0]} が挿入されました。`);
+    console.log(`${this.params} が挿入されました。`);
     console.log(`id: ${this.lastID}`);
     database.run(insertSQL, [titles[1]], function () {
-      console.log(`${titles[1]} が挿入されました。`);
+      console.log(`${this.params} が挿入されました。`);
       console.log(`id: ${this.lastID}`);
       database.run(insertSQL, [titles[2]], function () {
-        console.log(`${titles[2]} が挿入されました。`);
+        console.log(`${this.params} が挿入されました。`);
         console.log(`id: ${this.lastID}`);
         database.run(insertSQL, [titles[3]], function () {
-          console.log(`${titles[3]} が挿入されました。`);
+          console.log(`${this.params} が挿入されました。`);
           console.log(`id: ${this.lastID}`);
           database.run(insertSQL, [titles[4]], function () {
-            console.log(`${titles[4]} が挿入されました。`);
+            console.log(`${this.params} が挿入されました。`);
             console.log(`id: ${this.lastID}`);
-            database.all(
-              selectSQL,
-              (rows) => {
-                for (let row of rows) {
-                  console.log(`${row.id}: ${row.title}`);
-                }
-              },
-              () => {
-                database.run(dropTableSQL, () => {
-                  console.log("テーブルを削除しました。");
-                });
-              },
-            );
+            database.all(selectSQL, (_, rows) => {
+              for (let row of rows) {
+                console.log(`${row.id}: ${row.title}`);
+              }
+              database.run(dropTableSQL, () => {
+                console.log("テーブルを削除しました。");
+              });
+            });
           });
         });
       });
