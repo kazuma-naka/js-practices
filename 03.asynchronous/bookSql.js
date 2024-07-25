@@ -84,16 +84,11 @@ database.run(createTableSQL, () => {
           database.run(insertSQL, [titles[4]], function () {
             console.log(`${titles[4]} が挿入されました。`);
             console.log(`id: ${this.lastID}`);
-            database.each(
+            database.all(
               selectSQL,
-              (err, row) => {
-                try {
-                  if (err) {
-                    throw err;
-                  }
+              (rows) => {
+                for (let row of rows) {
                   console.log(`${row.id}: ${row.title}`);
-                } catch (err) {
-                  console.error(err.message);
                 }
               },
               () => {
@@ -123,7 +118,7 @@ database.run(createTableSQL, () => {
     } catch {
       console.error(err.message);
     }
-    database.each(selectErrorSQL, (err) => {
+    database.all(selectErrorSQL, (err) => {
       try {
         if (err) {
           throw err;
