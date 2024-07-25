@@ -3,7 +3,6 @@
 import timers from "timers/promises";
 import sqlite3 from "sqlite3";
 
-const database = new sqlite3.Database(":memory:");
 const createTableSQL =
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);";
 const insertSQL = "INSERT INTO books (title) VALUES (?)";
@@ -11,6 +10,7 @@ const selectSQL = "SELECT DISTINCT id, title FROM books ORDER BY id";
 const dropTableSQL = "DROP TABLE books";
 const insertErrorSQL = "INSERT INTO boooks (title) VALUES (?)";
 const selectErrorSQL = "SELECT id, tile FROM books";
+const database = new sqlite3.Database(":memory:");
 const titles = [
   "To Kill a Mockingbird",
   "1984",
@@ -18,60 +18,6 @@ const titles = [
   "Pride and Prejudice",
   "The Catcher in the Rye",
 ];
-
-function runPromise(db, sqlQuery, params = []) {
-  return new Promise((resolve, reject) => {
-    if (typeof params === "function" || typeof params === "undefined") {
-      params = [];
-    }
-    db.run(sqlQuery, params, (err) => {
-      try {
-        if (err) {
-          throw err;
-        }
-        resolve(params.length ? params : []);
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
-}
-
-function allPromise(db, sqlQuery) {
-  return new Promise((resolve, reject) => {
-    db.all(sqlQuery, (err, rows) => {
-      try {
-        if (err) {
-          throw err;
-        }
-        resolve(rows);
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
-}
-
-function closePromise(db) {
-  return new Promise((resolve) => {
-    db.close();
-    resolve();
-  });
-}
-
-function handleErrorSQL(err) {
-  if (err instanceof Error) {
-    if (err.code === "SQLITE_ERROR") {
-      console.error(err.message);
-    }
-  }
-}
-
-function showStart(startType) {
-  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
-  console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
-  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
-}
 
 /* callback start */
 showStart("callback");
@@ -302,3 +248,57 @@ console.log("books テーブルをドロップしました。");
 
 await closePromise(database);
 console.log("データベースをクローズする。");
+
+function runPromise(db, sqlQuery, params = []) {
+  return new Promise((resolve, reject) => {
+    if (typeof params === "function" || typeof params === "undefined") {
+      params = [];
+    }
+    db.run(sqlQuery, params, (err) => {
+      try {
+        if (err) {
+          throw err;
+        }
+        resolve(params.length ? params : []);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
+
+function allPromise(db, sqlQuery) {
+  return new Promise((resolve, reject) => {
+    db.all(sqlQuery, (err, rows) => {
+      try {
+        if (err) {
+          throw err;
+        }
+        resolve(rows);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
+
+function closePromise(db) {
+  return new Promise((resolve) => {
+    db.close();
+    resolve();
+  });
+}
+
+function handleErrorSQL(err) {
+  if (err instanceof Error) {
+    if (err.code === "SQLITE_ERROR") {
+      console.error(err.message);
+    }
+  }
+}
+
+function showStart(startType) {
+  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
+  console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
+  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
+}
