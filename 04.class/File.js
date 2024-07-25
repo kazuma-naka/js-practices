@@ -1,10 +1,9 @@
 import path from "path";
 import fs from "fs";
-import Editor from "./Editor.js";
 
-class File extends Editor {
+class File {
   memosFolderPath = "./memos";
-
+  
   createMemoDirectory() {
     if (!fs.existsSync(this.memosFolderPath)) {
       fs.mkdirSync(this.memosFolderPath);

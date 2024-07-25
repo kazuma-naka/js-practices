@@ -1,11 +1,18 @@
+import { execSync } from "child_process";
+
 class Editor {
-  getEditorName() {
+  launch(memoPath) {
     const editor = process.env.EDITOR;
     if (editor) {
-      return editor;
+      try {
+        execSync(`${editor} ${memoPath}`, {
+          stdio: "inherit",
+        });
+      } catch (error) {
+        console.error(`${editor} の起動に失敗しました: ${error.message}`);
+      }
     } else {
       console.error("環境変数 EDITOR が設定されていません。");
-      return;
     }
   }
 }

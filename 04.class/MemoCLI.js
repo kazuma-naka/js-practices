@@ -1,7 +1,7 @@
 import readline from "readline";
-import { execSync } from "child_process";
 import enquirer from "enquirer";
 import MemoText from "./MemoText.js";
+import Editor from "./Editor.js";
 
 class MemoCLI extends MemoText {
   constructor() {
@@ -79,19 +79,8 @@ class MemoCLI extends MemoText {
       choices: memos,
     };
     const response = await enquirer.prompt(editPrompt);
-    const editor = this.getEditorName();
-
-    if (editor) {
-      try {
-        execSync(`${editor} ${this.getFilePath(response.memo)}`, {
-          stdio: "inherit",
-        });
-      } catch (error) {
-        console.error(`${editor} の起動に失敗しました: ${error.message}`);
-      }
-    } else {
-      console.error("環境変数 EDITOR が設定されていません。");
-    }
+    const editor = new Editor();
+    editor.launch(this.getFilePath(response.memo))
   }
 
   async #delete() {
