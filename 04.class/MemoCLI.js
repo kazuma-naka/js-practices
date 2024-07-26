@@ -5,8 +5,6 @@ import Editor from "./Editor.js";
 
 class MemoCLI {
   create() {
-    const memoText = new MemoText();
-    memoText.createMemoDirectory();
     if (process.argv.length > 2) {
       const argument = process.argv.slice(2)[0];
       if (argument === "-l") {

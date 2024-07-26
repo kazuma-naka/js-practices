@@ -4,12 +4,7 @@ import File from "./File.js";
 class MemoText extends File {
   constructor(fileName) {
     super(fileName);
-  }
-
-  createMemoDirectory() {
-    if (!fs.existsSync(this.memosPath)) {
-      fs.mkdirSync(this.memosPath);
-    }
+    this.#createMemoDirectory();
   }
 
   getAllMemos() {
@@ -59,6 +54,12 @@ class MemoText extends File {
       }
       console.log(`${memo}.txt が作成されました。`);
     });
+  }
+
+  #createMemoDirectory() {
+    if (!fs.existsSync(this.memosPath)) {
+      fs.mkdirSync(this.memosPath);
+    }
   }
 }
 
