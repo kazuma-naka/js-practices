@@ -7,7 +7,7 @@ class MemoCLI {
     this.memoRepository = new MemoRepository();
   }
 
-  create() {
+  execute() {
     if (process.argv.length > 2) {
       const argument = process.argv.slice(2)[0];
       if (argument === "-l") {

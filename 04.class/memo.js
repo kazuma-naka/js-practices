@@ -3,4 +3,4 @@
 import MemoCLI from "./MemoCLI.js";
 
 const memoCLI = new MemoCLI();
-memoCLI.create();
+memoCLI.execute();
