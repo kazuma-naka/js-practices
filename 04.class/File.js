@@ -17,15 +17,12 @@ class File {
 
   isValidName() {
     const regex = /^[a-zA-Z0-9._-]+$/;
-    return regex.test(this.fileNamefileName);
+    return regex.test(this.fileName);
   }
 
   hasSame() {
     try {
-      fs.accessSync(
-        this.getPathWithTxt(this.fileNamefileName),
-        fs.constants.F_OK,
-      );
+      fs.accessSync(this.getPathWithTxt(this.fileName), fs.constants.F_OK);
       return true;
     } catch {
       return false;

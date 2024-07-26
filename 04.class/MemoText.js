@@ -31,10 +31,6 @@ class MemoText extends File {
     }
   }
 
-  getMemo(memo) {
-    return memo.split("\n")[0].replace(/\s+/g, "");
-  }
-
   deleteMemo() {
     try {
       fs.unlinkSync(this.getPath(this.fileName));
