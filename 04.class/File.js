@@ -2,30 +2,30 @@ import path from "path";
 import fs from "fs";
 
 class File {
-  memosFolderPath = "./memos";
-  
-  createMemoDirectory() {
-    if (!fs.existsSync(this.memosFolderPath)) {
-      fs.mkdirSync(this.memosFolderPath);
-    }
+  constructor(fileName) {
+    this.memosPath = "./memos";
+    this.fileName = fileName;
   }
 
-  getFilePath(fileName) {
-    return path.join(this.memosFolderPath, fileName);
+  getPath() {
+    return path.join(this.memosPath, this.fileName);
   }
 
-  getFilePathWithTxt(fileName) {
-    return path.join(this.memosFolderPath, `${fileName}.txt`);
+  getPathWithTxt() {
+    return path.join(this.memosPath, `${this.fileName}.txt`);
   }
 
-  isValidFileName(fileName) {
+  isValidName() {
     const regex = /^[a-zA-Z0-9._-]+$/;
-    return regex.test(fileName);
+    return regex.test(this.fileNamefileName);
   }
 
-  hasSameFile(fileName) {
+  hasSame() {
     try {
-      fs.accessSync(this.getFilePathWithTxt(fileName), fs.constants.F_OK);
+      fs.accessSync(
+        this.getPathWithTxt(this.fileNamefileName),
+        fs.constants.F_OK,
+      );
       return true;
     } catch {
       return false;

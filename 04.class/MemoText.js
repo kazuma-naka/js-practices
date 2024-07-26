@@ -2,10 +2,20 @@ import fs from "fs";
 import File from "./File.js";
 
 class MemoText extends File {
+  constructor(fileName) {
+    super(fileName);
+  }
+
+  createMemoDirectory() {
+    if (!fs.existsSync(this.memosPath)) {
+      fs.mkdirSync(this.memosPath);
+    }
+  }
+
   getAllMemos() {
     const memoTitles = [];
     try {
-      const files = fs.readdirSync(this.memosFolderPath);
+      const files = fs.readdirSync(this.memosPath);
       for (const file of files) {
         memoTitles.push(file);
       }
@@ -16,12 +26,12 @@ class MemoText extends File {
     }
   }
 
-  getMemoContent(fileName) {
+  getMemoContent() {
     try {
-      const data = fs.readFileSync(this.getFilePath(fileName), "utf8");
+      const data = fs.readFileSync(this.getPath(this.fileName), "utf8");
       return data;
     } catch (err) {
-      console.error(`${fileName}.txt の取得に失敗しました: ` + err);
+      console.error(`${this.fileName}.txt の取得に失敗しました: ` + err);
       return;
     }
   }
@@ -30,29 +40,25 @@ class MemoText extends File {
     return memo.split("\n")[0].replace(/\s+/g, "");
   }
 
-  deleteMemo(fileName) {
+  deleteMemo() {
     try {
-      fs.unlinkSync(this.getFilePath(fileName));
-      console.log(`${fileName} を削除しました`);
+      fs.unlinkSync(this.getPath(this.fileName));
+      console.log(`${this.fileName} を削除しました`);
       return true;
     } catch (err) {
-      console.error(`${fileName} の削除に失敗しました: `, err);
+      console.error(`${this.fileName} の削除に失敗しました: `, err);
       return false;
     }
   }
 
   saveMemo(memo, inputLines) {
-    fs.writeFile(
-      this.getFilePathWithTxt(memo),
-      inputLines.join("\n"),
-      (err) => {
-        if (err) {
-          console.error(err.message);
-          return;
-        }
-        console.log(`${memo}.txt が作成されました。`);
-      },
-    );
+    fs.writeFile(this.getPathWithTxt(memo), inputLines.join("\n"), (err) => {
+      if (err) {
+        console.error(err.message);
+        return;
+      }
+      console.log(`${memo}.txt が作成されました。`);
+    });
   }
 }
 

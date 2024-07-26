@@ -3,13 +3,10 @@ import enquirer from "enquirer";
 import MemoText from "./MemoText.js";
 import Editor from "./Editor.js";
 
-class MemoCLI extends MemoText {
-  constructor() {
-    super();
-  }
-
-  createCLI() {
-    this.createMemoDirectory();
+class MemoCLI {
+  create() {
+    const memoText = new MemoText();
+    memoText.createMemoDirectory();
     if (process.argv.length > 2) {
       const argument = process.argv.slice(2)[0];
       if (argument === "-l") {
@@ -27,13 +24,15 @@ class MemoCLI extends MemoText {
   }
 
   #lookUp() {
-    for (const memo of this.getAllMemos()) {
+    const memoText = new MemoText();
+    for (const memo of memoText.getAllMemos()) {
       console.log(memo.toString());
     }
   }
 
   async #reference() {
-    const memos = this.getAllMemos();
+    let memoText = new MemoText();
+    const memos = memoText.getAllMemos();
     if (memos.length === 0) return;
     const referencePrompt = {
       type: "select",
@@ -42,7 +41,8 @@ class MemoCLI extends MemoText {
       choices: memos,
     };
     const response = await enquirer.prompt(referencePrompt);
-    console.log(this.getMemoContent(response.memo));
+    memoText = new MemoText(response.memo);
+    console.log(memoText.getMemoContent(response.memo));
   }
 
   #create() {
@@ -64,13 +64,15 @@ class MemoCLI extends MemoText {
     });
 
     rl.on("close", () => {
-      const hint = this.getMemo(inputLines.join("\n"));
+      const memoText = new MemoText();
+      const hint = memoText.getMemo(inputLines.join("\n"));
       this.#save(hint, inputLines);
     });
   }
 
   async #edit() {
-    const memos = this.getAllMemos();
+    let memoText = new MemoText();
+    const memos = memoText.getAllMemos();
     if (memos.length === 0) return;
     const editPrompt = {
       type: "select",
@@ -80,11 +82,13 @@ class MemoCLI extends MemoText {
     };
     const response = await enquirer.prompt(editPrompt);
     const editor = new Editor();
-    editor.launch(this.getFilePath(response.memo))
+    memoText = new MemoText(response.memo);
+    editor.launch(memoText.getPath(response.memo));
   }
 
   async #delete() {
-    const memos = this.getAllMemos();
+    let memoText = new MemoText();
+    const memos = memoText.getAllMemos();
     if (memos.length === 0) return;
     const deletePrompt = {
       type: "select",
@@ -93,7 +97,8 @@ class MemoCLI extends MemoText {
       choices: memos,
     };
     const response = await enquirer.prompt(deletePrompt);
-    this.deleteMemo(response.memo);
+    memoText = new MemoText(response.memo);
+    memoText.deleteMemo(response.memo);
   }
 
   async #save(hint, inputLines) {
@@ -103,16 +108,17 @@ class MemoCLI extends MemoText {
       initial: hint,
     };
     const response = await enquirer.prompt(savePrompt);
-    if (!this.isValidFileName(response.memo)) {
+    const memoText = new MemoText(response.memo);
+    if (!memoText.isValidName(response.memo)) {
       console.log(`${response.memo} は不正な名前です。`);
       return this.#save(hint, inputLines);
     }
-    if (this.hasSameFile(response.memo)) {
+    if (memoText.hasSame(response.memo)) {
       console.log(`${response.memo}.txt はすでに存在します。`);
       console.log("別の名前をつけてください。");
       return this.#save(hint, inputLines);
     }
-    this.saveMemo(response.memo, inputLines);
+    memoText.saveMemo(response.memo, inputLines);
   }
 }
 
