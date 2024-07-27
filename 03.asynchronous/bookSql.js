@@ -7,7 +7,6 @@ const createTableSQL =
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);";
 const insertSQL = "INSERT INTO books (title) VALUES (?)";
 const selectSQL = "SELECT DISTINCT id, title FROM books ORDER BY id";
-const selectByIdSQL = "SELECT title FROM books WHERE id = ?";
 const dropTableSQL = "DROP TABLE books";
 const insertErrorSQL = "INSERT INTO boooks (title) VALUES (?)";
 const selectErrorSQL = "SELECT id, tile FROM books";
@@ -239,7 +238,6 @@ await runPromise(database, dropTableSQL);
 console.log("books テーブルを削除しました。");
 
 await closePromise(database);
-console.log("データベースをクローズする。");
 
 function runPromise(db, sqlQuery, params = []) {
   return new Promise((resolve, reject) => {
