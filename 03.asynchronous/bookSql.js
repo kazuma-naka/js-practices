@@ -26,32 +26,17 @@ database.run(createTableSQL, () => {
   console.log("Books のテーブルを作成");
   database.run(insertSQL, [titles[0]], function () {
     console.log(`id: ${this.lastID}`);
-    database.get(selectByIdSQL, [this.lastID], (_, row) => {
-      console.log(`${row.title} を挿入しました。`);
-    });
     database.run(insertSQL, [titles[1]], function () {
       console.log(`id: ${this.lastID}`);
-      database.get(selectByIdSQL, [this.lastID], (_, row) => {
-        console.log(`${row.title} を挿入しました。`);
-      });
       database.run(insertSQL, [titles[2]], function () {
         console.log(`id: ${this.lastID}`);
-        database.get(selectByIdSQL, [this.lastID], (_, row) => {
-          console.log(`${row.title} を挿入しました。`);
-        });
         database.run(insertSQL, [titles[3]], function () {
           console.log(`id: ${this.lastID}`);
-          database.get(selectByIdSQL, [this.lastID], (_, row) => {
-            console.log(`${row.title} を挿入しました。`);
-          });
           database.run(insertSQL, [titles[4]], function () {
             console.log(`id: ${this.lastID}`);
-            database.get(selectByIdSQL, [this.lastID], (_, row) => {
-              console.log(row.title);
-            });
             database.all(selectSQL, (_, rows) => {
               for (let row of rows) {
-                console.log(`${row.id}: ${row.title}`);
+                console.log(`id: ${row.id} title: ${row.title}`);
               }
               database.run(dropTableSQL, () => {
                 console.log("テーブルを削除しました。");
@@ -102,29 +87,24 @@ runPromise(database, createTableSQL)
     console.log("books テーブルを作成しました。");
     return runPromise(database, insertSQL, titles[0]);
   })
-  .then((result) => {
-    console.log(`id: ${result.id}`);
-    console.log(`${result.title} を挿入しました。`);
+  .then((id) => {
+    console.log(`id: ${id}`);
     return runPromise(database, insertSQL, titles[1]);
   })
-  .then((result) => {
-    console.log(`id: ${result.id}`);
-    console.log(`${result.title} を挿入しました。`);
+  .then((id) => {
+    console.log(`id: ${id}`);
     return runPromise(database, insertSQL, titles[2]);
   })
-  .then((result) => {
-    console.log(`id: ${result.id}`);
-    console.log(`${result.title} を挿入しました。`);
+  .then((id) => {
+    console.log(`id: ${id}`);
     return runPromise(database, insertSQL, titles[3]);
   })
-  .then((result) => {
-    console.log(`id: ${result.id}`);
-    console.log(`${result.title} を挿入しました。`);
+  .then((id) => {
+    console.log(`id: ${id}`);
     return runPromise(database, insertSQL, titles[4]);
   })
-  .then((result) => {
-    console.log(`id: ${result.id}`);
-    console.log(`${result.title} を挿入しました。`);
+  .then((id) => {
+    console.log(`id: ${id}`);
     return allPromise(database, selectSQL);
   })
   .then((rows) => {
@@ -134,7 +114,7 @@ runPromise(database, createTableSQL)
     return runPromise(database, dropTableSQL);
   })
   .then(() => {
-    console.log("books テーブルをドロップしました。");
+    console.log("books テーブルを削除しました。");
   });
 
 await timers.setTimeout(2500);
@@ -186,7 +166,7 @@ runPromise(database, createTableSQL)
     handleErrorSQL(err);
   })
   .then(() => {
-    console.log("books テーブルをドロップしました。");
+    console.log("books テーブルを削除しました。");
   });
 
 await timers.setTimeout(2500);
@@ -196,27 +176,22 @@ showStart("await");
 await runPromise(database, createTableSQL);
 console.log("books テーブルを作成しました。");
 const insertTitle0 = await runPromise(database, insertSQL, titles[0]);
-console.log(`id: ${insertTitle0.id}`);
-console.log(`${insertTitle0.title} を挿入しました。`);
+console.log(`id: ${insertTitle0}`);
 const insertTitle1 = await runPromise(database, insertSQL, titles[1]);
-console.log(`id: ${insertTitle1.id}`);
-console.log(`${insertTitle1.title} を挿入しました。`);
+console.log(`id: ${insertTitle1}`);
 const insertTitle2 = await runPromise(database, insertSQL, titles[2]);
-console.log(`id: ${insertTitle2.id}`);
-console.log(`${insertTitle2.title} を挿入しました。`);
+console.log(`id: ${insertTitle2}`);
 const insertTitle3 = await runPromise(database, insertSQL, titles[3]);
-console.log(`id: ${insertTitle3.id}`);
-console.log(`${insertTitle3.title} を挿入しました。`);
+console.log(`id: ${insertTitle3}`);
 const insertTitle4 = await runPromise(database, insertSQL, titles[4]);
-console.log(`id: ${insertTitle4.id}`);
-console.log(`${insertTitle4.title} を挿入しました。`);
+console.log(`id: ${insertTitle4}`);
 
 const rows = await allPromise(database, selectSQL);
 for (let row of rows) {
   console.log(`id: ${row.id} title: ${row.title}`);
 }
 await runPromise(database, dropTableSQL);
-console.log("books テーブルをドロップしました。");
+console.log("books テーブルを削除しました。");
 
 await timers.setTimeout(2500);
 
@@ -261,7 +236,7 @@ try {
 }
 
 await runPromise(database, dropTableSQL);
-console.log("books テーブルをドロップしました。");
+console.log("books テーブルを削除しました。");
 
 await closePromise(database);
 console.log("データベースをクローズする。");
@@ -276,11 +251,7 @@ function runPromise(db, sqlQuery, params = []) {
         if (err) {
           throw err;
         }
-        const result = {
-          id: params.length ? this.lastID : null,
-          title: params.length ? params : [],
-        };
-        resolve(result);
+        resolve(params.length ? this.lastID : null);
       } catch (err) {
         reject(err);
       }
