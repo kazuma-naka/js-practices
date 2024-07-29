@@ -22,7 +22,7 @@ const titles = [
 /* callback start */
 showStart("callback");
 database.run(createTableSQL, () => {
-  console.log("Books のテーブルを作成");
+  console.log("books テーブルを作成しました。");
   database.run(insertSQL, [titles[0]], function () {
     console.log(`id: ${this.lastID}`);
     database.run(insertSQL, [titles[1]], function () {
@@ -34,7 +34,7 @@ database.run(createTableSQL, () => {
           database.run(insertSQL, [titles[4]], function () {
             console.log(`id: ${this.lastID}`);
             database.all(selectSQL, (_, rows) => {
-              for (let row of rows) {
+              for (const row of rows) {
                 console.log(`id: ${row.id} title: ${row.title}`);
               }
               database.run(dropTableSQL, () => {
@@ -53,7 +53,7 @@ await timers.setTimeout(2500);
 /* callback with error start */
 showStart("callback with error");
 database.run(createTableSQL, () => {
-  console.log("Books のテーブルを作成");
+  console.log("books テーブルを作成しました。");
   database.run(insertErrorSQL, [titles[0]], function (err) {
     handleErrorSQL(err);
     database.run(insertErrorSQL, [titles[1]], function (err) {
@@ -67,7 +67,7 @@ database.run(createTableSQL, () => {
             database.all(selectErrorSQL, (err) => {
               handleErrorSQL(err);
               database.run(dropTableSQL, () => {
-                console.log("テーブルを削除しました。");
+                console.log("books テーブルを削除しました。");
               });
             });
           });
@@ -107,7 +107,7 @@ runPromise(database, createTableSQL)
     return allPromise(database, selectSQL);
   })
   .then((rows) => {
-    for (let row of rows) {
+    for (const row of rows) {
       console.log(`id: ${row.id} title: ${row.title}`);
     }
     return runPromise(database, dropTableSQL);
@@ -184,9 +184,8 @@ const insertTitle3 = await runPromise(database, insertSQL, titles[3]);
 console.log(`id: ${insertTitle3}`);
 const insertTitle4 = await runPromise(database, insertSQL, titles[4]);
 console.log(`id: ${insertTitle4}`);
-
 const rows = await allPromise(database, selectSQL);
-for (let row of rows) {
+for (const row of rows) {
   console.log(`id: ${row.id} title: ${row.title}`);
 }
 await runPromise(database, dropTableSQL);
@@ -203,40 +202,33 @@ try {
 } catch (err) {
   handleErrorSQL(err);
 }
-
 try {
   await runPromise(database, insertErrorSQL, titles[1]);
 } catch (err) {
   handleErrorSQL(err);
 }
-
 try {
   await runPromise(database, insertErrorSQL, titles[2]);
 } catch (err) {
   handleErrorSQL(err);
 }
-
 try {
   await runPromise(database, insertErrorSQL, titles[3]);
 } catch (err) {
   handleErrorSQL(err);
 }
-
 try {
   await runPromise(database, insertErrorSQL, titles[4]);
 } catch (err) {
   handleErrorSQL(err);
 }
-
 try {
   await allPromise(database, selectErrorSQL);
 } catch (err) {
   handleErrorSQL(err);
 }
-
 await runPromise(database, dropTableSQL);
 console.log("books テーブルを削除しました。");
-
 await closePromise(database);
 
 function runPromise(db, sqlQuery, params = []) {
