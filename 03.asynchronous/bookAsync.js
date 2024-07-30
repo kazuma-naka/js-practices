@@ -55,17 +55,17 @@ showStart("callback with error");
 database.run(createTableSQL, () => {
   console.log("books テーブルを作成しました。");
   database.run(insertErrorSQL, [titles[0]], function (err) {
-    handleErrorSQL(err);
+    console.error(err.message);
     database.run(insertErrorSQL, [titles[1]], function (err) {
-      handleErrorSQL(err);
+      console.error(err.message);
       database.run(insertErrorSQL, [titles[2]], function (err) {
-        handleErrorSQL(err);
+        console.error(err.message);
         database.run(insertErrorSQL, [titles[3]], function (err) {
-          handleErrorSQL(err);
+          console.error(err.message);
           database.run(insertErrorSQL, [titles[4]], function (err) {
-            handleErrorSQL(err);
+            console.error(err.message);
             database.all(selectErrorSQL, (err) => {
-              handleErrorSQL(err);
+              console.error(err.message);
               database.run(dropTableSQL, () => {
                 console.log("books テーブルを削除しました。");
               });
@@ -126,43 +126,43 @@ runPromise(database, createTableSQL)
     return runPromise(database, insertErrorSQL, titles[0]);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     return runPromise(database, insertErrorSQL, titles[1]);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     return runPromise(database, insertErrorSQL, titles[2]);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     return runPromise(database, insertErrorSQL, titles[3]);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     return runPromise(database, insertErrorSQL, titles[4]);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     return allPromise(database, selectErrorSQL);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     return runPromise(database, dropTableSQL);
   })
   .catch((err) => {
-    handleErrorSQL(err);
+    console.error(err.message);
   })
   .then(() => {
     console.log("books テーブルを削除しました。");
@@ -200,32 +200,32 @@ console.log("books テーブルを作成しました。");
 try {
   await runPromise(database, insertErrorSQL, titles[0]);
 } catch (err) {
-  handleErrorSQL(err);
+  console.error(err.message);
 }
 try {
   await runPromise(database, insertErrorSQL, titles[1]);
 } catch (err) {
-  handleErrorSQL(err);
+  console.error(err.message);
 }
 try {
   await runPromise(database, insertErrorSQL, titles[2]);
 } catch (err) {
-  handleErrorSQL(err);
+  console.error(err.message);
 }
 try {
   await runPromise(database, insertErrorSQL, titles[3]);
 } catch (err) {
-  handleErrorSQL(err);
+  console.error(err.message);
 }
 try {
   await runPromise(database, insertErrorSQL, titles[4]);
 } catch (err) {
-  handleErrorSQL(err);
+  console.error(err.message);
 }
 try {
   await allPromise(database, selectErrorSQL);
 } catch (err) {
-  handleErrorSQL(err);
+  console.error(err.message);
 }
 await runPromise(database, dropTableSQL);
 console.log("books テーブルを削除しました。");
@@ -234,7 +234,7 @@ await closePromise(database);
 function runPromise(db, sqlQuery, params = []) {
   return new Promise((resolve, reject) => {
     db.run(sqlQuery, params, function (err) {
-      if (err) {
+      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
         reject(err);
       } else {
         resolve(this);
@@ -246,7 +246,7 @@ function runPromise(db, sqlQuery, params = []) {
 function allPromise(db, sqlQuery) {
   return new Promise((resolve, reject) => {
     db.all(sqlQuery, (err, rows) => {
-      if (err) {
+      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
         reject(err);
       } else {
         resolve(rows);
@@ -265,14 +265,6 @@ function closePromise(db) {
       }
     });
   });
-}
-
-function handleErrorSQL(err) {
-  if (err instanceof Error) {
-    if (err.code === "SQLITE_ERROR") {
-      console.error(err.message);
-    }
-  }
 }
 
 function showStart(startType) {
