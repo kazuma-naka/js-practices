@@ -86,24 +86,24 @@ runPromise(database, createTableSQL)
     console.log("books テーブルを作成しました。");
     return runPromise(database, insertSQL, titles[0]);
   })
-  .then((id) => {
-    console.log(`id: ${id}`);
+  .then((result) => {
+    console.log(`id: ${result.lastID}`);
     return runPromise(database, insertSQL, titles[1]);
   })
-  .then((id) => {
-    console.log(`id: ${id}`);
+  .then((result) => {
+    console.log(`id: ${result.lastID}`);
     return runPromise(database, insertSQL, titles[2]);
   })
-  .then((id) => {
-    console.log(`id: ${id}`);
+  .then((result) => {
+    console.log(`id: ${result.lastID}`);
     return runPromise(database, insertSQL, titles[3]);
   })
-  .then((id) => {
-    console.log(`id: ${id}`);
+  .then((result) => {
+    console.log(`id: ${result.lastID}`);
     return runPromise(database, insertSQL, titles[4]);
   })
-  .then((id) => {
-    console.log(`id: ${id}`);
+  .then((result) => {
+    console.log(`id: ${result.lastID}`);
     return allPromise(database, selectSQL);
   })
   .then((rows) => {
@@ -175,15 +175,15 @@ showStart("await");
 await runPromise(database, createTableSQL);
 console.log("books テーブルを作成しました。");
 const insertTitle0 = await runPromise(database, insertSQL, titles[0]);
-console.log(`id: ${insertTitle0}`);
+console.log(`id: ${insertTitle0.lastID}`);
 const insertTitle1 = await runPromise(database, insertSQL, titles[1]);
-console.log(`id: ${insertTitle1}`);
+console.log(`id: ${insertTitle1.lastID}`);
 const insertTitle2 = await runPromise(database, insertSQL, titles[2]);
-console.log(`id: ${insertTitle2}`);
+console.log(`id: ${insertTitle2.lastID}`);
 const insertTitle3 = await runPromise(database, insertSQL, titles[3]);
-console.log(`id: ${insertTitle3}`);
+console.log(`id: ${insertTitle3.lastID}`);
 const insertTitle4 = await runPromise(database, insertSQL, titles[4]);
-console.log(`id: ${insertTitle4}`);
+console.log(`id: ${insertTitle4.lastID}`);
 const rows = await allPromise(database, selectSQL);
 for (const row of rows) {
   console.log(`id: ${row.id} title: ${row.title}`);
@@ -233,17 +233,11 @@ await closePromise(database);
 
 function runPromise(db, sqlQuery, params = []) {
   return new Promise((resolve, reject) => {
-    if (typeof params === "function" || typeof params === "undefined") {
-      params = [];
-    }
     db.run(sqlQuery, params, function (err) {
-      try {
-        if (err) {
-          throw err;
-        }
-        resolve(params.length ? this.lastID : null);
-      } catch (err) {
+      if (err) {
         reject(err);
+      } else {
+        resolve(this);
       }
     });
   });
@@ -252,22 +246,24 @@ function runPromise(db, sqlQuery, params = []) {
 function allPromise(db, sqlQuery) {
   return new Promise((resolve, reject) => {
     db.all(sqlQuery, (err, rows) => {
-      try {
-        if (err) {
-          throw err;
-        }
-        resolve(rows);
-      } catch (err) {
+      if (err) {
         reject(err);
+      } else {
+        resolve(rows);
       }
     });
   });
 }
 
 function closePromise(db) {
-  return new Promise((resolve) => {
-    db.close();
-    resolve();
+  return new Promise((resolve, reject) => {
+    db.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
   });
 }
 
