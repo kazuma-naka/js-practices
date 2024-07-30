@@ -10,6 +10,49 @@ const selectSQL = "SELECT DISTINCT id, title FROM books ORDER BY id";
 const dropTableSQL = "DROP TABLE books";
 const insertErrorSQL = "INSERT INTO boooks (title) VALUES (?)";
 const selectErrorSQL = "SELECT id, tile FROM books";
+
+function runPromise(db, sqlQuery, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sqlQuery, params, function (err) {
+      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
+        reject(err);
+      } else {
+        resolve(this);
+      }
+    });
+  });
+}
+
+function allPromise(db, sqlQuery) {
+  return new Promise((resolve, reject) => {
+    db.all(sqlQuery, (err, rows) => {
+      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+function closePromise(db) {
+  return new Promise((resolve, reject) => {
+    db.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function showStart(startType) {
+  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
+  console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
+  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
+}
+
 const database = new sqlite3.Database(":memory:");
 const titles = [
   "To Kill a Mockingbird",
@@ -230,45 +273,3 @@ try {
 await runPromise(database, dropTableSQL);
 console.log("books テーブルを削除しました。");
 await closePromise(database);
-
-function runPromise(db, sqlQuery, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sqlQuery, params, function (err) {
-      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
-        reject(err);
-      } else {
-        resolve(this);
-      }
-    });
-  });
-}
-
-function allPromise(db, sqlQuery) {
-  return new Promise((resolve, reject) => {
-    db.all(sqlQuery, (err, rows) => {
-      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
-}
-
-function closePromise(db) {
-  return new Promise((resolve, reject) => {
-    db.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
-function showStart(startType) {
-  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
-  console.log("\x1b[36m%s\x1b[0m", `${startType} を開始`);
-  console.log("\x1b[36m%s\x1b[0m", "-".repeat(30));
-}
