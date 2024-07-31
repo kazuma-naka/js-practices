@@ -27,7 +27,7 @@ class MemoRepository {
   }
 
   allMemos() {
-    return this.memoText.getAllMemos();
+    return MemoText.getAllMemos();
   }
 
   memoContent(memo) {

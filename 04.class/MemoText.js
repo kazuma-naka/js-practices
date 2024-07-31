@@ -8,24 +8,14 @@ class MemoText extends File {
   }
 
   static getAllMemos() {
-    const memoTitles = [];
-    try {
-      const files = fs.readdirSync(this.memosPath);
-      for (const file of files) {
-        memoTitles.push(file);
-      }
-      return memoTitles;
-    } catch (err) {
-      console.error(`ファイルの取得に失敗しました: ` + err);
-      return memoTitles;
-    }
+    return fs.readdirSync(File.memosPath);
   }
 
   getMemoContent() {
     try {
       return fs.readFileSync(this.getPath(), "utf8");
     } catch (err) {
-      console.error(`${this.fileName}.txt の取得に失敗しました: ` + err);
+      console.error(`${this.fileName} の取得に失敗しました: ` + err);
       return;
     }
   }
@@ -42,7 +32,7 @@ class MemoText extends File {
   }
 
   saveMemo(memo, inputLines) {
-    fs.writeFile(this.getPath("txt"), inputLines.join("\n"), (err) => {
+    fs.writeFile(this.getPath(), inputLines.join("\n"), (err) => {
       if (err) {
         console.error(err.message);
         return;
@@ -52,8 +42,8 @@ class MemoText extends File {
   }
 
   #createMemoDirectory() {
-    if (!fs.existsSync(this.memosPath)) {
-      fs.mkdirSync(this.memosPath);
+    if (!fs.existsSync(File.memosPath)) {
+      fs.mkdirSync(File.memosPath);
     }
   }
 }

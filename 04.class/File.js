@@ -2,17 +2,13 @@ import path from "path";
 import fs from "fs";
 
 class File {
+  static memosPath = "./memos";
   constructor(fileName) {
-    this.memosPath = "./memos";
     this.fileName = fileName;
   }
 
-  getPath([,type]) {
-    if(type === "txt"){
-      return path.join(this.memosPath, `${this.fileName}.txt`);
-    }else{
-      return path.join(this.memosPath, this.fileName);
-    }
+  getPath() {
+    return path.join(File.memosPath, this.fileName);
   }
 
   isValidName() {
@@ -22,7 +18,7 @@ class File {
 
   hasSame() {
     try {
-      fs.accessSync(this.getPath("txt"), fs.constants.F_OK);
+      fs.accessSync(this.getPath(), fs.constants.F_OK);
       return true;
     } catch {
       return false;
