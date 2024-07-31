@@ -7,12 +7,12 @@ class File {
     this.fileName = fileName;
   }
 
-  getPath() {
-    return path.join(this.memosPath, this.fileName);
-  }
-
-  getPathWithTxt() {
-    return path.join(this.memosPath, `${this.fileName}.txt`);
+  getPath([,type]) {
+    if(type === "txt"){
+      return path.join(this.memosPath, `${this.fileName}.txt`);
+    }else{
+      return path.join(this.memosPath, this.fileName);
+    }
   }
 
   isValidName() {
@@ -22,7 +22,7 @@ class File {
 
   hasSame() {
     try {
-      fs.accessSync(this.getPathWithTxt(this.fileName), fs.constants.F_OK);
+      fs.accessSync(this.getPath("txt"), fs.constants.F_OK);
       return true;
     } catch {
       return false;

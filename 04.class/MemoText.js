@@ -7,7 +7,7 @@ class MemoText extends File {
     this.#createMemoDirectory();
   }
 
-  getAllMemos() {
+  static getAllMemos() {
     const memoTitles = [];
     try {
       const files = fs.readdirSync(this.memosPath);
@@ -23,8 +23,7 @@ class MemoText extends File {
 
   getMemoContent() {
     try {
-      const data = fs.readFileSync(this.getPath(this.fileName), "utf8");
-      return data;
+      return fs.readFileSync(this.getPath(), "utf8");
     } catch (err) {
       console.error(`${this.fileName}.txt の取得に失敗しました: ` + err);
       return;
@@ -33,7 +32,7 @@ class MemoText extends File {
 
   deleteMemo() {
     try {
-      fs.unlinkSync(this.getPath(this.fileName));
+      fs.unlinkSync(this.getPath());
       console.log(`${this.fileName} を削除しました`);
       return true;
     } catch (err) {
@@ -43,7 +42,7 @@ class MemoText extends File {
   }
 
   saveMemo(memo, inputLines) {
-    fs.writeFile(this.getPathWithTxt(memo), inputLines.join("\n"), (err) => {
+    fs.writeFile(this.getPath("txt"), inputLines.join("\n"), (err) => {
       if (err) {
         console.error(err.message);
         return;
