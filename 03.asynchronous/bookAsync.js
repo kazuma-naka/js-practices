@@ -14,7 +14,7 @@ const SELECT_ERROR_SQL = "SELECT id, tile FROM books";
 function runPromise(db, sqlQuery, params = []) {
   return new Promise((resolve, reject) => {
     db.run(sqlQuery, params, function (err) {
-      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
+      if (err) {
         reject(err);
       } else {
         resolve(this);
@@ -26,7 +26,7 @@ function runPromise(db, sqlQuery, params = []) {
 function allPromise(db, sqlQuery) {
   return new Promise((resolve, reject) => {
     db.all(sqlQuery, (err, rows) => {
-      if (err && err instanceof Error && err.code === "SQLITE_ERROR") {
+      if (err) {
         reject(err);
       } else {
         resolve(rows);
@@ -231,32 +231,56 @@ console.log("books テーブルを作成しました。");
 try {
   await runPromise(database, INSERT_ERROR_SQL, titles[0]);
 } catch (err) {
-  console.error(err.message);
+  if (err instanceof Error && err.code === "SQLITE_ERROR") {
+    console.error(err.message);
+  } else {
+    throw err;
+  }
 }
 try {
   await runPromise(database, INSERT_ERROR_SQL, titles[1]);
 } catch (err) {
-  console.error(err.message);
+  if (err instanceof Error && err.code === "SQLITE_ERROR") {
+    console.error(err.message);
+  } else {
+    throw err;
+  }
 }
 try {
   await runPromise(database, INSERT_ERROR_SQL, titles[2]);
 } catch (err) {
-  console.error(err.message);
+  if (err instanceof Error && err.code === "SQLITE_ERROR") {
+    console.error(err.message);
+  } else {
+    throw err;
+  }
 }
 try {
   await runPromise(database, INSERT_ERROR_SQL, titles[3]);
 } catch (err) {
-  console.error(err.message);
+  if (err instanceof Error && err.code === "SQLITE_ERROR") {
+    console.error(err.message);
+  } else {
+    throw err;
+  }
 }
 try {
   await runPromise(database, INSERT_ERROR_SQL, titles[4]);
 } catch (err) {
-  console.error(err.message);
+  if (err instanceof Error && err.code === "SQLITE_ERROR") {
+    console.error(err.message);
+  } else {
+    throw err;
+  }
 }
 try {
   await allPromise(database, SELECT_ERROR_SQL);
 } catch (err) {
-  console.error(err.message);
+  if (err instanceof Error && err.code === "SQLITE_ERROR") {
+    console.error(err.message);
+  } else {
+    throw err;
+  }
 }
 await runPromise(database, DROP_TABLE_SQL);
 console.log("books テーブルを削除しました。");
