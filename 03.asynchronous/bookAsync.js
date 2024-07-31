@@ -3,13 +3,13 @@
 import timers from "timers/promises";
 import sqlite3 from "sqlite3";
 
-const createTableSQL =
+const CREATE_TABLE_SQL =
   "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL UNIQUE);";
-const insertSQL = "INSERT INTO books (title) VALUES (?)";
-const selectSQL = "SELECT DISTINCT id, title FROM books ORDER BY id";
-const dropTableSQL = "DROP TABLE books";
-const insertErrorSQL = "INSERT INTO boooks (title) VALUES (?)";
-const selectErrorSQL = "SELECT id, tile FROM books";
+const INSERT_SQL = "INSERT INTO books (title) VALUES (?)";
+const SELECT_SQL = "SELECT DISTINCT id, title FROM books ORDER BY id";
+const DROP_TABLE_SQL = "DROP TABLE books";
+const INSERT_ERROR_SQL = "INSERT INTO boooks (title) VALUES (?)";
+const SELECT_ERROR_SQL = "SELECT id, tile FROM books";
 
 function runPromise(db, sqlQuery, params = []) {
   return new Promise((resolve, reject) => {
@@ -64,24 +64,24 @@ const titles = [
 
 /* callback start */
 showStart("callback");
-database.run(createTableSQL, () => {
+database.run(CREATE_TABLE_SQL, () => {
   console.log("books テーブルを作成しました。");
-  database.run(insertSQL, [titles[0]], function () {
+  database.run(INSERT_SQL, [titles[0]], function () {
     console.log(`id: ${this.lastID}`);
-    database.run(insertSQL, [titles[1]], function () {
+    database.run(INSERT_SQL, [titles[1]], function () {
       console.log(`id: ${this.lastID}`);
-      database.run(insertSQL, [titles[2]], function () {
+      database.run(INSERT_SQL, [titles[2]], function () {
         console.log(`id: ${this.lastID}`);
-        database.run(insertSQL, [titles[3]], function () {
+        database.run(INSERT_SQL, [titles[3]], function () {
           console.log(`id: ${this.lastID}`);
-          database.run(insertSQL, [titles[4]], function () {
+          database.run(INSERT_SQL, [titles[4]], function () {
             console.log(`id: ${this.lastID}`);
-            database.all(selectSQL, (_, rows) => {
+            database.all(SELECT_SQL, (_, rows) => {
               for (const row of rows) {
                 console.log(`id: ${row.id} title: ${row.title}`);
               }
-              database.run(dropTableSQL, () => {
-                console.log("テーブルを削除しました。");
+              database.run(DROP_TABLE_SQL, () => {
+                console.log("books テーブルを削除しました。");
               });
             });
           });
@@ -95,21 +95,21 @@ await timers.setTimeout(2500);
 
 /* callback with error start */
 showStart("callback with error");
-database.run(createTableSQL, () => {
+database.run(CREATE_TABLE_SQL, () => {
   console.log("books テーブルを作成しました。");
-  database.run(insertErrorSQL, [titles[0]], function (err) {
+  database.run(INSERT_ERROR_SQL, [titles[0]], function (err) {
     console.error(err.message);
-    database.run(insertErrorSQL, [titles[1]], function (err) {
+    database.run(INSERT_ERROR_SQL, [titles[1]], function (err) {
       console.error(err.message);
-      database.run(insertErrorSQL, [titles[2]], function (err) {
+      database.run(INSERT_ERROR_SQL, [titles[2]], function (err) {
         console.error(err.message);
-        database.run(insertErrorSQL, [titles[3]], function (err) {
+        database.run(INSERT_ERROR_SQL, [titles[3]], function (err) {
           console.error(err.message);
-          database.run(insertErrorSQL, [titles[4]], function (err) {
+          database.run(INSERT_ERROR_SQL, [titles[4]], function (err) {
             console.error(err.message);
-            database.all(selectErrorSQL, (err) => {
+            database.all(SELECT_ERROR_SQL, (err) => {
               console.error(err.message);
-              database.run(dropTableSQL, () => {
+              database.run(DROP_TABLE_SQL, () => {
                 console.log("books テーブルを削除しました。");
               });
             });
@@ -124,36 +124,36 @@ await timers.setTimeout(2500);
 
 /* Promise start */
 showStart("Promise");
-runPromise(database, createTableSQL)
+runPromise(database, CREATE_TABLE_SQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
-    return runPromise(database, insertSQL, titles[0]);
+    return runPromise(database, INSERT_SQL, titles[0]);
   })
   .then((result) => {
     console.log(`id: ${result.lastID}`);
-    return runPromise(database, insertSQL, titles[1]);
+    return runPromise(database, INSERT_SQL, titles[1]);
   })
   .then((result) => {
     console.log(`id: ${result.lastID}`);
-    return runPromise(database, insertSQL, titles[2]);
+    return runPromise(database, INSERT_SQL, titles[2]);
   })
   .then((result) => {
     console.log(`id: ${result.lastID}`);
-    return runPromise(database, insertSQL, titles[3]);
+    return runPromise(database, INSERT_SQL, titles[3]);
   })
   .then((result) => {
     console.log(`id: ${result.lastID}`);
-    return runPromise(database, insertSQL, titles[4]);
+    return runPromise(database, INSERT_SQL, titles[4]);
   })
   .then((result) => {
     console.log(`id: ${result.lastID}`);
-    return allPromise(database, selectSQL);
+    return allPromise(database, SELECT_SQL);
   })
   .then((rows) => {
     for (const row of rows) {
       console.log(`id: ${row.id} title: ${row.title}`);
     }
-    return runPromise(database, dropTableSQL);
+    return runPromise(database, DROP_TABLE_SQL);
   })
   .then(() => {
     console.log("books テーブルを削除しました。");
@@ -163,47 +163,35 @@ await timers.setTimeout(2500);
 
 /* Promise with error start */
 showStart("Promise with error");
-runPromise(database, createTableSQL)
+runPromise(database, CREATE_TABLE_SQL)
   .then(() => {
     console.log("books テーブルを作成しました。");
-    return runPromise(database, insertErrorSQL, titles[0]);
+    return runPromise(database, INSERT_ERROR_SQL, titles[0]);
   })
   .catch((err) => {
     console.error(err.message);
   })
-  .then(() => {
-    return runPromise(database, insertErrorSQL, titles[1]);
-  })
+  .then(() => runPromise(database, INSERT_ERROR_SQL, titles[1]))
   .catch((err) => {
     console.error(err.message);
   })
-  .then(() => {
-    return runPromise(database, insertErrorSQL, titles[2]);
-  })
+  .then(() => runPromise(database, INSERT_ERROR_SQL, titles[2]))
   .catch((err) => {
     console.error(err.message);
   })
-  .then(() => {
-    return runPromise(database, insertErrorSQL, titles[3]);
-  })
+  .then(() => runPromise(database, INSERT_ERROR_SQL, titles[3]))
   .catch((err) => {
     console.error(err.message);
   })
-  .then(() => {
-    return runPromise(database, insertErrorSQL, titles[4]);
-  })
+  .then(() => runPromise(database, INSERT_ERROR_SQL, titles[4]))
   .catch((err) => {
     console.error(err.message);
   })
-  .then(() => {
-    return allPromise(database, selectErrorSQL);
-  })
+  .then(() => allPromise(database, SELECT_ERROR_SQL))
   .catch((err) => {
     console.error(err.message);
   })
-  .then(() => {
-    return runPromise(database, dropTableSQL);
-  })
+  .then(() => runPromise(database, DROP_TABLE_SQL))
   .catch((err) => {
     console.error(err.message);
   })
@@ -215,61 +203,61 @@ await timers.setTimeout(2500);
 
 /* await start */
 showStart("await");
-await runPromise(database, createTableSQL);
+await runPromise(database, CREATE_TABLE_SQL);
 console.log("books テーブルを作成しました。");
-const insertTitle0 = await runPromise(database, insertSQL, titles[0]);
-console.log(`id: ${insertTitle0.lastID}`);
-const insertTitle1 = await runPromise(database, insertSQL, titles[1]);
-console.log(`id: ${insertTitle1.lastID}`);
-const insertTitle2 = await runPromise(database, insertSQL, titles[2]);
-console.log(`id: ${insertTitle2.lastID}`);
-const insertTitle3 = await runPromise(database, insertSQL, titles[3]);
-console.log(`id: ${insertTitle3.lastID}`);
-const insertTitle4 = await runPromise(database, insertSQL, titles[4]);
-console.log(`id: ${insertTitle4.lastID}`);
-const rows = await allPromise(database, selectSQL);
+const statementObject0 = await runPromise(database, INSERT_SQL, titles[0]);
+console.log(`id: ${statementObject0.lastID}`);
+const statementObject1 = await runPromise(database, INSERT_SQL, titles[1]);
+console.log(`id: ${statementObject1.lastID}`);
+const statementObject2 = await runPromise(database, INSERT_SQL, titles[2]);
+console.log(`id: ${statementObject2.lastID}`);
+const statementObject3 = await runPromise(database, INSERT_SQL, titles[3]);
+console.log(`id: ${statementObject3.lastID}`);
+const statementObject4 = await runPromise(database, INSERT_SQL, titles[4]);
+console.log(`id: ${statementObject4.lastID}`);
+const rows = await allPromise(database, SELECT_SQL);
 for (const row of rows) {
   console.log(`id: ${row.id} title: ${row.title}`);
 }
-await runPromise(database, dropTableSQL);
+await runPromise(database, DROP_TABLE_SQL);
 console.log("books テーブルを削除しました。");
 
 await timers.setTimeout(2500);
 
 /* await with error start */
 showStart("await with error");
-await runPromise(database, createTableSQL);
+await runPromise(database, CREATE_TABLE_SQL);
 console.log("books テーブルを作成しました。");
 try {
-  await runPromise(database, insertErrorSQL, titles[0]);
+  await runPromise(database, INSERT_ERROR_SQL, titles[0]);
 } catch (err) {
   console.error(err.message);
 }
 try {
-  await runPromise(database, insertErrorSQL, titles[1]);
+  await runPromise(database, INSERT_ERROR_SQL, titles[1]);
 } catch (err) {
   console.error(err.message);
 }
 try {
-  await runPromise(database, insertErrorSQL, titles[2]);
+  await runPromise(database, INSERT_ERROR_SQL, titles[2]);
 } catch (err) {
   console.error(err.message);
 }
 try {
-  await runPromise(database, insertErrorSQL, titles[3]);
+  await runPromise(database, INSERT_ERROR_SQL, titles[3]);
 } catch (err) {
   console.error(err.message);
 }
 try {
-  await runPromise(database, insertErrorSQL, titles[4]);
+  await runPromise(database, INSERT_ERROR_SQL, titles[4]);
 } catch (err) {
   console.error(err.message);
 }
 try {
-  await allPromise(database, selectErrorSQL);
+  await allPromise(database, SELECT_ERROR_SQL);
 } catch (err) {
   console.error(err.message);
 }
-await runPromise(database, dropTableSQL);
+await runPromise(database, DROP_TABLE_SQL);
 console.log("books テーブルを削除しました。");
 await closePromise(database);
