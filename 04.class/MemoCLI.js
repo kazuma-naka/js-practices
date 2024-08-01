@@ -1,10 +1,10 @@
 import readline from "readline";
 import enquirer from "enquirer";
-import MemoRepository from "./MemoRepository.js";
+import MemoText from "./MemoText.js";
 
 class MemoCLI {
   constructor() {
-    this.memoRepository = new MemoRepository();
+    this.memoText = new MemoText();
   }
 
   execute() {
@@ -25,14 +25,13 @@ class MemoCLI {
   }
 
   #lookUp() {
-    const memos = this.memoRepository.allMemos();
-    for (let memo of memos) {
+    for (const memo of MemoText.allMemos()) {
       console.log(memo.toString());
     }
   }
 
   async #reference() {
-    const memos = this.memoRepository.allMemos();
+    const memos = MemoText.allMemos();
     if (memos.length === 0) return;
     const referencePrompt = {
       type: "select",
@@ -41,7 +40,8 @@ class MemoCLI {
       choices: memos,
     };
     const response = await enquirer.prompt(referencePrompt);
-    const content = this.memoRepository.memoContent(response.memo);
+    this.memoText = new MemoText(response.memo);
+    const content = this.memoText.memoContent(response.memo);
     console.log(content);
   }
 
@@ -64,13 +64,13 @@ class MemoCLI {
     });
 
     rl.on("close", () => {
-      const hint = this.memoRepository.createHint(inputLines.join("\n"));
+      const hint = this.memoText.createHint(inputLines.join("\n"));
       this.#save(hint, inputLines);
     });
   }
 
   async #edit() {
-    const memos = this.memoRepository.allMemos();
+    const memos = MemoText.allMemos();
     if (memos.length === 0) return;
     const editPrompt = {
       type: "select",
@@ -79,11 +79,11 @@ class MemoCLI {
       choices: memos,
     };
     const response = await enquirer.prompt(editPrompt);
-    this.memoRepository.edit(response.memo);
+    this.memoText.edit(response.memo);
   }
 
   async #delete() {
-    const memos = this.memoRepository.allMemos();
+    const memos = MemoText.allMemos();
     if (memos.length === 0) return;
     const deletePrompt = {
       type: "select",
@@ -92,7 +92,8 @@ class MemoCLI {
       choices: memos,
     };
     const response = await enquirer.prompt(deletePrompt);
-    this.memoRepository.delete(response.memo);
+    this.memoText = new MemoText(response.memo);
+    this.memoText.delete(response.memo);
   }
 
   async #save(hint, inputLines) {
@@ -102,16 +103,17 @@ class MemoCLI {
       initial: hint,
     };
     const response = await enquirer.prompt(savePrompt);
-    if (!this.memoRepository.isValidName(response.memo)) {
+    this.memoText = new MemoText(response.memo);
+    if (!this.memoText.isValidName(response.memo)) {
       console.log(`${response.memo} は不正な名前です。`);
       return this.#save(hint, inputLines);
     }
-    if (this.memoRepository.hasSame(response.memo)) {
+    if (this.memoText.hasSame(response.memo)) {
       console.log(`${response.memo}.txt はすでに存在します。`);
       console.log("別の名前をつけてください。");
       return this.#save(hint, inputLines);
     }
-    this.memoRepository.save(response.memo, inputLines);
+    this.memoText.save(response.memo, inputLines);
   }
 }
 

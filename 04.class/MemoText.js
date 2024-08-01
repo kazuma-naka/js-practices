@@ -1,4 +1,5 @@
 import fs from "fs";
+import Editor from "./Editor.js";
 import File from "./File.js";
 
 class MemoText extends File {
@@ -7,11 +8,11 @@ class MemoText extends File {
     this.#createMemoDirectory();
   }
 
-  static getAllMemos() {
+  static allMemos() {
     return fs.readdirSync(File.memosPath);
   }
 
-  getMemoContent() {
+  memoContent() {
     try {
       return fs.readFileSync(this.getPath(), "utf8");
     } catch (err) {
@@ -20,7 +21,17 @@ class MemoText extends File {
     }
   }
 
-  deleteMemo() {
+  createHint(memo) {
+    return memo.split("\n")[0].replace(/\s+/g, "");
+  }
+
+  edit(memo) {
+    this.memoText = new MemoText(memo);
+    const editor = new Editor();
+    editor.launch(this.memoText.getPath());
+  }
+
+  delete() {
     try {
       fs.unlinkSync(this.getPath());
       console.log(`${this.fileName} を削除しました`);
@@ -31,7 +42,7 @@ class MemoText extends File {
     }
   }
 
-  saveMemo(memo, inputLines) {
+  save(memo, inputLines) {
     fs.writeFile(this.getPath(), inputLines.join("\n"), (err) => {
       if (err) {
         console.error(err.message);
