@@ -31,17 +31,9 @@ class MemoCLI {
   }
 
   async #reference() {
-    const memos = MemoText.all();
-    if (memos.length === 0) return;
-    const referencePrompt = {
-      type: "select",
-      name: "memo",
-      message: "Enter キーでメモを表示",
-      choices: memos,
-    };
-    const response = await enquirer.prompt(referencePrompt);
-    this.memoText = new MemoText(response.memo);
-    const content = this.memoText.content(response.memo);
+    const prompt = this.#prompt("reference");
+    const response = await enquirer.prompt(prompt);
+    const content = this.memoText.content(response.title);
     console.log(content);
   }
 
@@ -64,56 +56,66 @@ class MemoCLI {
     });
 
     rl.on("close", () => {
-      const hint = this.memoText.title(inputLines.join("\n"));
-      this.#save(hint, inputLines);
+      const title = this.memoText.title(inputLines.join("\n"));
+      this.#save(title, inputLines);
     });
   }
 
   async #edit() {
-    const memos = MemoText.all();
-    if (memos.length === 0) return;
-    const editPrompt = {
-      type: "select",
-      name: "memo",
-      message: "Enter キーでメモを編集",
-      choices: memos,
-    };
-    const response = await enquirer.prompt(editPrompt);
-    this.memoText.edit(response.memo);
+    const prompt = this.#prompt("edit");
+    const response = await enquirer.prompt(prompt);
+    this.memoText.edit(response.title);
   }
 
   async #delete() {
-    const memos = MemoText.all();
-    if (memos.length === 0) return;
-    const deletePrompt = {
-      type: "select",
-      name: "memo",
-      message: "Enter キーでメモを削除",
-      choices: memos,
-    };
-    const response = await enquirer.prompt(deletePrompt);
-    this.memoText = new MemoText(response.memo);
-    this.memoText.delete(response.memo);
+    const prompt = this.#prompt("delete");
+    const response = await enquirer.prompt(prompt);
+    this.memoText = new MemoText(response.title);
+    this.memoText.delete(response.title);
   }
 
-  async #save(hint, inputLines) {
+  async #save(head, inputLines) {
     const savePrompt = {
       type: "input",
-      name: "memo",
-      initial: hint,
+      name: "title",
+      initial: head,
     };
     const response = await enquirer.prompt(savePrompt);
-    this.memoText = new MemoText(response.memo);
-    if (!this.memoText.isValidName(response.memo)) {
-      console.log(`${response.memo} は不正な名前です。`);
-      return this.#save(hint, inputLines);
+    this.memoText = new MemoText(response.title);
+    if (!this.memoText.isValidName(response.title)) {
+      console.log(`${response.title} は不正な名前です。`);
+      return this.#save(head, inputLines);
     }
-    if (this.memoText.hasSame(response.memo)) {
-      console.log(`${response.memo}.txt はすでに存在します。`);
+    if (this.memoText.hasSame(response.title)) {
+      console.log(`${response.title}.txt はすでに存在します。`);
       console.log("別の名前をつけてください。");
-      return this.#save(hint, inputLines);
+      return this.#save(head, inputLines);
     }
-    this.memoText.save(response.memo, inputLines);
+    this.memoText.save(response.title, inputLines);
+  }
+
+  #prompt(type) {
+    const memos = MemoText.all();
+    if (memos.length === 0) return;
+    const prompt = {
+      type: "select",
+      name: "title",
+      message: this.#promptMessage(type),
+      choices: memos,
+    };
+    return prompt;
+  }
+
+  #promptMessage(type) {
+    if (type === "reference") {
+      return "Enter キーでメモを表示";
+    } else if (type === "delete") {
+      return "Enter キーでメモを削除";
+    } else if (type === "edit") {
+      return "Enter キーでメモを編集";
+    } else {
+      return "";
+    }
   }
 }
 

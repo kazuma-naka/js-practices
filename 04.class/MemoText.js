@@ -3,9 +3,8 @@ import path from "path";
 import Editor from "./Editor.js";
 
 class MemoText {
-  constructor(fileName) {
+  constructor() {
     this.#createDirectory();
-    this.fileName = fileName;
   }
 
   static memosPath = "./memos";
@@ -14,11 +13,11 @@ class MemoText {
     return fs.readdirSync(MemoText.memosPath);
   }
 
-  content() {
+  content(title) {
     try {
-      return fs.readFileSync(this.path(), "utf8");
+      return fs.readFileSync(this.#path(title), "utf8");
     } catch (err) {
-      console.error(`${this.fileName} の取得に失敗しました: ` + err);
+      console.error(`${title} の取得に失敗しました: ` + err);
       return;
     }
   }
@@ -27,30 +26,29 @@ class MemoText {
     return memo.split("\n")[0].replace(/\s+/g, "");
   }
 
-  edit(memo) {
-    this.memoText = new MemoText(memo);
+  edit(title) {
     const editor = new Editor();
-    editor.launch(this.memoText.path());
+    editor.launch(this.#path(title));
   }
 
-  delete() {
+  delete(title) {
     try {
-      fs.unlinkSync(this.path());
-      console.log(`${this.fileName} を削除しました`);
+      fs.unlinkSync(this.#path(title));
+      console.log(`${title} を削除しました`);
       return true;
     } catch (err) {
-      console.error(`${this.fileName} の削除に失敗しました: `, err);
+      console.error(`${title} の削除に失敗しました: `, err);
       return false;
     }
   }
 
-  save(memo, inputLines) {
-    fs.writeFile(this.path(), inputLines.join("\n"), (err) => {
+  save(title, inputLines) {
+    fs.writeFile(this.#path(title), inputLines.join("\n"), (err) => {
       if (err) {
         console.error(err.message);
         return;
       }
-      console.log(`${memo}.txt が作成されました。`);
+      console.log(`${title}.txt が作成されました。`);
     });
   }
 
@@ -60,18 +58,18 @@ class MemoText {
     }
   }
 
-  path() {
-    return path.join(MemoText.memosPath, this.fileName);
+  #path(title) {
+    return path.join(MemoText.memosPath, title);
   }
 
-  isValidName() {
+  isValidName(title) {
     const regex = /^[a-zA-Z0-9._-]+$/;
-    return regex.test(this.fileName);
+    return regex.test(title);
   }
 
-  hasSame() {
+  hasSame(title) {
     try {
-      fs.accessSync(this.path(), fs.constants.F_OK);
+      fs.accessSync(this.#path(title), fs.constants.F_OK);
       return true;
     } catch {
       return false;
