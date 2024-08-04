@@ -1,39 +1,41 @@
 import fs from "fs";
+import path from "path";
 import Editor from "./Editor.js";
-import File from "./File.js";
 
-class MemoText extends File {
+class MemoText {
   constructor(fileName) {
-    super(fileName);
-    this.#createMemoDirectory();
+    this.#createDirectory();
+    this.fileName = fileName;
   }
 
-  static allMemos() {
-    return fs.readdirSync(File.memosPath);
+  static memosPath = "./memos";
+
+  static all() {
+    return fs.readdirSync(MemoText.memosPath);
   }
 
-  memoContent() {
+  content() {
     try {
-      return fs.readFileSync(this.getPath(), "utf8");
+      return fs.readFileSync(this.path(), "utf8");
     } catch (err) {
       console.error(`${this.fileName} の取得に失敗しました: ` + err);
       return;
     }
   }
 
-  createHint(memo) {
+  title(memo) {
     return memo.split("\n")[0].replace(/\s+/g, "");
   }
 
   edit(memo) {
     this.memoText = new MemoText(memo);
     const editor = new Editor();
-    editor.launch(this.memoText.getPath());
+    editor.launch(this.memoText.path());
   }
 
   delete() {
     try {
-      fs.unlinkSync(this.getPath());
+      fs.unlinkSync(this.path());
       console.log(`${this.fileName} を削除しました`);
       return true;
     } catch (err) {
@@ -43,7 +45,7 @@ class MemoText extends File {
   }
 
   save(memo, inputLines) {
-    fs.writeFile(this.getPath(), inputLines.join("\n"), (err) => {
+    fs.writeFile(this.path(), inputLines.join("\n"), (err) => {
       if (err) {
         console.error(err.message);
         return;
@@ -52,9 +54,27 @@ class MemoText extends File {
     });
   }
 
-  #createMemoDirectory() {
-    if (!fs.existsSync(File.memosPath)) {
-      fs.mkdirSync(File.memosPath);
+  #createDirectory() {
+    if (!fs.existsSync(MemoText.memosPath)) {
+      fs.mkdirSync(MemoText.memosPath);
+    }
+  }
+
+  path() {
+    return path.join(MemoText.memosPath, this.fileName);
+  }
+
+  isValidName() {
+    const regex = /^[a-zA-Z0-9._-]+$/;
+    return regex.test(this.fileName);
+  }
+
+  hasSame() {
+    try {
+      fs.accessSync(this.path(), fs.constants.F_OK);
+      return true;
+    } catch {
+      return false;
     }
   }
 }

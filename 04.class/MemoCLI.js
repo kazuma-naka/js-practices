@@ -25,13 +25,13 @@ class MemoCLI {
   }
 
   #lookUp() {
-    for (const memo of MemoText.allMemos()) {
+    for (const memo of MemoText.all()) {
       console.log(memo.toString());
     }
   }
 
   async #reference() {
-    const memos = MemoText.allMemos();
+    const memos = MemoText.all();
     if (memos.length === 0) return;
     const referencePrompt = {
       type: "select",
@@ -41,7 +41,7 @@ class MemoCLI {
     };
     const response = await enquirer.prompt(referencePrompt);
     this.memoText = new MemoText(response.memo);
-    const content = this.memoText.memoContent(response.memo);
+    const content = this.memoText.content(response.memo);
     console.log(content);
   }
 
@@ -64,13 +64,13 @@ class MemoCLI {
     });
 
     rl.on("close", () => {
-      const hint = this.memoText.createHint(inputLines.join("\n"));
+      const hint = this.memoText.title(inputLines.join("\n"));
       this.#save(hint, inputLines);
     });
   }
 
   async #edit() {
-    const memos = MemoText.allMemos();
+    const memos = MemoText.all();
     if (memos.length === 0) return;
     const editPrompt = {
       type: "select",
@@ -83,7 +83,7 @@ class MemoCLI {
   }
 
   async #delete() {
-    const memos = MemoText.allMemos();
+    const memos = MemoText.all();
     if (memos.length === 0) return;
     const deletePrompt = {
       type: "select",
