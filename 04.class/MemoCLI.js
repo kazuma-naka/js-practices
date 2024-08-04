@@ -70,7 +70,6 @@ class MemoCLI {
   async #delete() {
     const prompt = this.#prompt("delete");
     const response = await enquirer.prompt(prompt);
-    this.memoText = new MemoText(response.title);
     this.memoText.delete(response.title);
   }
 
@@ -81,7 +80,6 @@ class MemoCLI {
       initial: head,
     };
     const response = await enquirer.prompt(savePrompt);
-    this.memoText = new MemoText(response.title);
     if (!this.memoText.isValidName(response.title)) {
       console.log(`${response.title} は不正な名前です。`);
       return this.#save(head, inputLines);
